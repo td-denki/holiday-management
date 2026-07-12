@@ -16,7 +16,8 @@
   header{background:var(--ink);padding:12px 16px;}
   .header-inner{max-width:720px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
   .logo{display:flex;align-items:center;gap:10px;}
-  .logo-stamp{width:34px;height:34px;border-radius:50%;border:2px solid var(--shu);color:var(--shu);background:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;transform:rotate(-8deg);flex-shrink:0;}
+  .logo-img{height:34px;background:#fff;border-radius:6px;padding:3px 8px;display:block;flex-shrink:0;}
+  .logo-img img{height:100%;width:auto;display:block;}
   .logo h1{color:#fff;font-size:15px;letter-spacing:.05em;}
   .user-name{color:rgba(255,255,255,.7);font-size:13px;}
   .tab-group{display:flex;border:1px solid rgba(255,255,255,.3);border-radius:6px;overflow:hidden;}
@@ -72,7 +73,7 @@
   .login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
   .login-card{width:100%;max-width:380px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:32px 28px;}
   .login-logo{display:flex;flex-direction:column;align-items:center;gap:8px;margin-bottom:28px;}
-  .login-stamp{width:56px;height:56px;border-radius:50%;border:2.5px solid var(--shu);color:var(--shu);background:#fff;font-size:22px;font-weight:700;display:flex;align-items:center;justify-content:center;transform:rotate(-8deg);}
+  .login-logo-img{width:100%;max-width:280px;height:auto;display:block;}
   .login-title{font-weight:700;font-size:17px;letter-spacing:.05em;}
   .loader{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:6px;}
   .loader-dark{border-color:rgba(0,0,0,.15);border-top-color:var(--sub);}
@@ -95,7 +96,7 @@ const GAS_URL = "https://script.google.com/macros/s/AKfycbzGiAr1uO8tX2UVWD7htwWT
 <div id="page-login" class="login-wrap">
   <div class="login-card">
     <div class="login-logo">
-      <div class="login-stamp">休</div>
+      <img src="logo.png" alt="匡電気管理事務所" class="login-logo-img">
       <div class="login-title">有給休暇管理</div>
     </div>
     <div style="display:flex;flex-direction:column;gap:14px;">
@@ -118,7 +119,7 @@ const GAS_URL = "https://script.google.com/macros/s/AKfycbzGiAr1uO8tX2UVWD7htwWT
   <header>
     <div class="header-inner">
       <div class="logo">
-        <div class="logo-stamp">休</div>
+        <span class="logo-img"><img src="logo.png" alt="匡電気管理事務所"></span>
         <h1>有給休暇管理</h1>
         <span class="user-name" id="header-username"></span>
       </div>
