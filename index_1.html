@@ -5,163 +5,93 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>有給休暇管理</title>
 <style>
-  /* ── トークン ── */
   :root {
-    --ink:       #1C2B3A;
-    --sub:       #7B8894;
-    --paper:     #F4F6F7;
-    --card:      #FFFFFF;
-    --line:      #DDE3E7;
-    --shu:       #C73E3A;
-    --shu-soft:  #FBEEED;
-    --amber:     #9A6B00;
-    --amber-soft:#FBF3DF;
-    --gray-soft: #EEF0F1;
-    --radius:    8px;
-    --font: "Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP",sans-serif;
+    --ink:#1C2B3A; --sub:#7B8894; --paper:#F4F6F7; --card:#FFFFFF;
+    --line:#DDE3E7; --shu:#C73E3A; --shu-soft:#FBEEED;
+    --amber:#9A6B00; --amber-soft:#FBF3DF; --gray-soft:#EEF0F1; --radius:8px;
+    --font:"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP",sans-serif;
   }
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--paper); color: var(--ink); font-family: var(--font); min-height: 100vh; }
-
-  /* ── ヘッダー ── */
-  header { background: var(--ink); padding: 12px 16px; }
-  .header-inner { max-width: 720px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-  .logo { display: flex; align-items: center; gap: 10px; }
-  .logo-stamp {
-    width: 34px; height: 34px; border-radius: 50%; border: 2px solid var(--shu);
-    color: var(--shu); background: #fff; font-size: 13px; font-weight: 700;
-    display: flex; align-items: center; justify-content: center;
-    transform: rotate(-8deg); flex-shrink: 0;
-  }
-  .logo h1 { color: #fff; font-size: 15px; letter-spacing: .05em; }
-  .user-name { color: rgba(255,255,255,.7); font-size: 13px; }
-  .tab-group { display: flex; border: 1px solid rgba(255,255,255,.3); border-radius: 6px; overflow: hidden; }
-  .tab-btn { padding: 6px 14px; font-size: 13px; background: transparent; color: rgba(255,255,255,.85); border: none; cursor: pointer; position: relative; }
-  .tab-btn.active { background: #fff; color: var(--ink); }
-  .badge { display: inline-flex; align-items: center; justify-content: center;
-           min-width: 18px; height: 18px; border-radius: 9px; background: var(--shu);
-           color: #fff; font-size: 10px; padding: 0 4px; margin-left: 4px; }
-
-  /* ── メイン ── */
-  main { max-width: 720px; margin: 0 auto; padding: 20px 16px; display: flex; flex-direction: column; gap: 16px; }
-
-  /* ── カード ── */
-  .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; }
-  .card-title { font-weight: 700; padding-left: 10px; margin-bottom: 14px; }
-  .card-title.shu  { border-left: 3px solid var(--shu); }
-  .card-title.ink  { border-left: 3px solid var(--ink); }
-
-  /* ── フォーム ── */
-  label.lbl { display: block; font-size: 12px; color: var(--sub); margin-bottom: 4px; }
-  input[type=text], input[type=password], input[type=date], input[type=number], select, textarea {
-    width: 100%; border: 1px solid var(--line); border-radius: 6px;
-    padding: 8px 10px; color: var(--ink); background: #fff; font-family: var(--font); font-size: 14px;
-  }
-  input:focus, select:focus, textarea:focus { outline: 2px solid var(--shu); border-color: transparent; }
-  .form-row { display: flex; gap: 12px; flex-wrap: wrap; }
-  .form-row > div { flex: 1; min-width: 150px; }
-
-  /* ── ボタン ── */
-  .btn { padding: 8px 20px; border-radius: 6px; font-weight: 700; font-size: 14px; cursor: pointer; border: none; }
-  .btn-shu  { background: var(--shu); color: #fff; }
-  .btn-ink  { background: var(--ink); color: #fff; }
-  .btn-ghost { background: #fff; color: var(--sub); border: 1px solid var(--line); font-weight: 400; }
-  .btn:disabled { opacity: .5; cursor: not-allowed; }
-
-  /* ── 残日数 ── */
-  .stat-grid { display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
-  .big-num { font-size: 52px; font-weight: 700; line-height: 1; }
-  .big-num.warn { color: var(--shu); }
-  .stat-items { display: flex; gap: 20px; font-size: 13px; color: var(--sub); }
-  .stat-items strong { color: var(--ink); }
-  .stat-items .amber { color: var(--amber); }
-
-  /* ── バッジ ── */
-  .status-badge { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 4px; }
-  .s-pending  { background: var(--amber-soft); color: var(--amber); }
-  .s-approved { background: var(--shu-soft);   color: var(--shu); }
-  .s-rejected { background: var(--gray-soft);  color: var(--sub); }
-  .s-cancelled{ background: var(--gray-soft);  color: var(--sub); }
-
-  /* ── 申請リスト ── */
-  .req-list .req-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line); }
-  .req-list .req-item:last-child { border-bottom: none; }
-  .req-meta { flex: 1; min-width: 0; }
-  .req-date { font-weight: 700; font-size: 14px; }
-  .req-sub  { font-size: 12px; color: var(--sub); margin-top: 2px; }
-  .req-cancel { font-size: 11px; color: var(--sub); text-decoration: underline; cursor: pointer; background: none; border: none; margin-top: 4px; }
-
-  /* ── 朱印 ── */
-  .stamp {
-    width: 60px; height: 60px; border-radius: 50%; border: 2.5px solid var(--shu);
-    color: var(--shu); transform: rotate(-8deg); background: rgba(255,255,255,.6);
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    flex-shrink: 0; user-select: none;
-  }
-  .stamp-label { font-weight: 700; font-size: 14px; letter-spacing: .1em; }
-  .stamp-date  { font-size: 9px; }
-
-  /* ── テーブル ── */
-  .tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
-  .tbl th { color: var(--sub); font-weight: 400; padding: 6px 4px; border-bottom: 1px solid var(--line); text-align: right; }
-  .tbl th:first-child { text-align: left; }
-  .tbl td { padding: 8px 4px; border-bottom: 1px solid var(--line); text-align: right; vertical-align: middle; }
-  .tbl td:first-child { text-align: left; font-weight: 700; }
-  .tbl input[type=number] { width: 70px; padding: 4px 6px; text-align: right; }
-  .tbl .warn-cell { color: var(--shu); font-weight: 700; }
-  .tbl .amber-cell{ color: var(--amber); }
-
-  /* ── アラート ── */
-  .alert { font-size: 13px; padding: 10px 14px; border-radius: 6px; margin-top: 8px; }
-  .alert-ok  { background: var(--shu-soft); color: var(--shu); }
-  .alert-err { background: var(--gray-soft); color: var(--ink); }
-  .alert-warn{ background: var(--amber-soft); color: var(--amber); }
-
-  /* ── ログイン画面 ── */
-  .login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
-  .login-card { width: 100%; max-width: 380px; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 32px 28px; }
-  .login-logo { display: flex; flex-direction: column; align-items: center; gap: 8px; margin-bottom: 28px; }
-  .login-stamp {
-    width: 56px; height: 56px; border-radius: 50%; border: 2.5px solid var(--shu);
-    color: var(--shu); background: #fff; font-size: 22px; font-weight: 700;
-    display: flex; align-items: center; justify-content: center; transform: rotate(-8deg);
-  }
-  .login-title { font-weight: 700; font-size: 17px; letter-spacing: .05em; }
-
-  /* ── ローダー ── */
-  .loader { display: inline-block; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,.4); border-top-color: #fff; border-radius: 50%; animation: spin .6s linear infinite; vertical-align: middle; margin-right: 6px; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  /* ── GAS URL設定バナー ── */
-  .setup-banner { background: var(--amber-soft); color: var(--amber); font-size: 13px; padding: 10px 16px; text-align: center; }
-
-  /* ── 区切り ── */
-  .divider { border: none; border-top: 1px solid var(--line); margin: 14px 0; }
-  .text-sub { font-size: 12px; color: var(--sub); }
-  .mt2 { margin-top: 8px; }
-  .mt3 { margin-top: 12px; }
-  .mt4 { margin-top: 16px; }
-  .flex-end { display: flex; justify-content: flex-end; }
-  .flex-between { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
-  .hidden { display: none !important; }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--paper);color:var(--ink);font-family:var(--font);min-height:100vh;}
+  header{background:var(--ink);padding:12px 16px;}
+  .header-inner{max-width:720px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+  .logo{display:flex;align-items:center;gap:10px;}
+  .logo-stamp{width:34px;height:34px;border-radius:50%;border:2px solid var(--shu);color:var(--shu);background:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;transform:rotate(-8deg);flex-shrink:0;}
+  .logo h1{color:#fff;font-size:15px;letter-spacing:.05em;}
+  .user-name{color:rgba(255,255,255,.7);font-size:13px;}
+  .tab-group{display:flex;border:1px solid rgba(255,255,255,.3);border-radius:6px;overflow:hidden;}
+  .tab-btn{padding:6px 14px;font-size:13px;background:transparent;color:rgba(255,255,255,.85);border:none;cursor:pointer;}
+  .tab-btn.active{background:#fff;color:var(--ink);}
+  .badge{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;border-radius:9px;background:var(--shu);color:#fff;font-size:10px;padding:0 4px;margin-left:4px;}
+  main{max-width:720px;margin:0 auto;padding:20px 16px;display:flex;flex-direction:column;gap:16px;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;}
+  .card-title{font-weight:700;padding-left:10px;margin-bottom:14px;}
+  .card-title.shu{border-left:3px solid var(--shu);}
+  .card-title.ink{border-left:3px solid var(--ink);}
+  label.lbl{display:block;font-size:12px;color:var(--sub);margin-bottom:4px;}
+  input[type=text],input[type=password],input[type=date],input[type=number],select{width:100%;border:1px solid var(--line);border-radius:6px;padding:8px 10px;color:var(--ink);background:#fff;font-family:var(--font);font-size:14px;}
+  input:focus,select:focus{outline:2px solid var(--shu);border-color:transparent;}
+  .form-row{display:flex;gap:12px;flex-wrap:wrap;}
+  .form-row>div{flex:1;min-width:150px;}
+  .btn{padding:8px 20px;border-radius:6px;font-weight:700;font-size:14px;cursor:pointer;border:none;}
+  .btn-shu{background:var(--shu);color:#fff;}
+  .btn-ink{background:var(--ink);color:#fff;}
+  .btn-ghost{background:#fff;color:var(--sub);border:1px solid var(--line);font-weight:400;}
+  .btn:disabled{opacity:.5;cursor:not-allowed;}
+  .stat-grid{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  .big-num{font-size:52px;font-weight:700;line-height:1;}
+  .big-num.warn{color:var(--shu);}
+  .stat-items{display:flex;gap:20px;font-size:13px;color:var(--sub);}
+  .stat-items strong{color:var(--ink);}
+  .stat-items .amber{color:var(--amber);}
+  .status-badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:4px;}
+  .s-pending{background:var(--amber-soft);color:var(--amber);}
+  .s-approved{background:var(--shu-soft);color:var(--shu);}
+  .s-rejected{background:var(--gray-soft);color:var(--sub);}
+  .s-cancelled{background:var(--gray-soft);color:var(--sub);}
+  .req-list .req-item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);}
+  .req-list .req-item:last-child{border-bottom:none;}
+  .req-meta{flex:1;min-width:0;}
+  .req-date{font-weight:700;font-size:14px;}
+  .req-sub{font-size:12px;color:var(--sub);margin-top:2px;}
+  .req-cancel{font-size:11px;color:var(--sub);text-decoration:underline;cursor:pointer;background:none;border:none;margin-top:4px;}
+  .stamp{width:60px;height:60px;border-radius:50%;border:2.5px solid var(--shu);color:var(--shu);transform:rotate(-8deg);background:rgba(255,255,255,.6);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;user-select:none;}
+  .stamp-label{font-weight:700;font-size:14px;letter-spacing:.1em;}
+  .stamp-date{font-size:9px;}
+  .tbl{width:100%;border-collapse:collapse;font-size:13px;}
+  .tbl th{color:var(--sub);font-weight:400;padding:6px 4px;border-bottom:1px solid var(--line);text-align:right;}
+  .tbl th:first-child{text-align:left;}
+  .tbl td{padding:8px 4px;border-bottom:1px solid var(--line);text-align:right;vertical-align:middle;}
+  .tbl td:first-child{text-align:left;font-weight:700;}
+  .tbl input[type=number]{width:70px;padding:4px 6px;text-align:right;}
+  .tbl .warn-cell{color:var(--shu);font-weight:700;}
+  .tbl .amber-cell{color:var(--amber);}
+  .alert{font-size:13px;padding:10px 14px;border-radius:6px;margin-top:8px;}
+  .alert-ok{background:var(--shu-soft);color:var(--shu);}
+  .alert-err{background:var(--gray-soft);color:var(--ink);}
+  .login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+  .login-card{width:100%;max-width:380px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:32px 28px;}
+  .login-logo{display:flex;flex-direction:column;align-items:center;gap:8px;margin-bottom:28px;}
+  .login-stamp{width:56px;height:56px;border-radius:50%;border:2.5px solid var(--shu);color:var(--shu);background:#fff;font-size:22px;font-weight:700;display:flex;align-items:center;justify-content:center;transform:rotate(-8deg);}
+  .login-title{font-weight:700;font-size:17px;letter-spacing:.05em;}
+  .loader{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:6px;}
+  .loader-dark{border-color:rgba(0,0,0,.15);border-top-color:var(--sub);}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .divider{border:none;border-top:1px solid var(--line);margin:14px 0;}
+  .text-sub{font-size:12px;color:var(--sub);}
+  .mt2{margin-top:8px;} .mt3{margin-top:12px;} .mt4{margin-top:16px;}
+  .flex-between{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
+  .hidden{display:none!important;}
 </style>
 </head>
 <body>
 
-<!-- ======================================================
-  ★ GAS デプロイURL をここに設定してください
-  (GAS > デプロイ > ウェブアプリとして導入 > URLをコピー)
-====================================================== -->
 <script>
-const GAS_URL = ""; // ← ここに貼り付ける
+// ★ GAS デプロイURL
+const GAS_URL = "https://script.google.com/macros/s/AKfycbzGiAr1uO8tX2UVWD7htwWTMKNaW3kcg97nxCDLq8vt_Re5Bj7dfzFgFDarBBkDziDm/exec";
 </script>
 
-<!-- GAS URL未設定バナー -->
-<div id="setup-banner" class="setup-banner hidden">
-  ⚠️ GAS_URL が未設定です。index.html の先頭スクリプト内にデプロイURLを設定してください。
-</div>
-
-<!-- ======================================================  ログイン画面 -->
+<!-- ログイン画面 -->
 <div id="page-login" class="login-wrap">
   <div class="login-card">
     <div class="login-logo">
@@ -171,19 +101,19 @@ const GAS_URL = ""; // ← ここに貼り付ける
     <div style="display:flex;flex-direction:column;gap:14px;">
       <div>
         <label class="lbl">アカウント名</label>
-        <input type="text" id="login-account" autocomplete="username" placeholder="account">
+        <input type="text" id="login-account" autocomplete="username" placeholder="アカウント名">
       </div>
       <div>
         <label class="lbl">パスワード</label>
-        <input type="password" id="login-password" autocomplete="current-password" placeholder="password">
+        <input type="password" id="login-password" autocomplete="current-password" placeholder="パスワード">
       </div>
-      <button class="btn btn-shu" id="login-btn" onclick="doLogin()" style="width:100%;margin-top:4px;">ログイン</button>
+      <button class="btn btn-shu" id="login-btn" style="width:100%;margin-top:4px;">ログイン</button>
       <div id="login-msg"></div>
     </div>
   </div>
 </div>
 
-<!-- ====================================================== ログイン後メイン -->
+<!-- メイン画面 -->
 <div id="page-main" class="hidden">
   <header>
     <div class="header-inner">
@@ -194,22 +124,18 @@ const GAS_URL = ""; // ← ここに貼り付ける
       </div>
       <div style="display:flex;align-items:center;gap:10px;">
         <div class="tab-group" id="tab-group"></div>
-        <button class="btn btn-ghost" style="font-size:12px;padding:5px 10px;" onclick="doLogout()">ログアウト</button>
+        <button class="btn btn-ghost" style="font-size:12px;padding:5px 10px;" id="logout-btn">ログアウト</button>
       </div>
     </div>
   </header>
-
   <main>
-    <!-- ======= マイページ ======= -->
+    <!-- マイページ -->
     <div id="view-employee" class="hidden">
-
-      <!-- 残日数 -->
       <div class="card" id="stat-card">
         <div class="stat-grid">
           <div>
             <label class="lbl">有給残日数</label>
-            <div class="big-num" id="stat-remaining">--</div>
-            <span style="color:var(--sub);font-size:13px;">日</span>
+            <div><span class="big-num" id="stat-remaining">--</span><span style="color:var(--sub);font-size:13px;"> 日</span></div>
           </div>
           <div class="stat-items">
             <div>付与 <strong id="stat-granted">--</strong> 日</div>
@@ -218,341 +144,227 @@ const GAS_URL = ""; // ← ここに貼り付ける
           </div>
         </div>
       </div>
-
-      <!-- 申請フォーム -->
-      <div class="card">
+      <div class="card" id="req-form-card">
         <div class="card-title shu">有給休暇を申請する</div>
         <div class="form-row">
-          <div>
-            <label class="lbl">開始日</label>
-            <input type="date" id="req-start">
-          </div>
-          <div>
-            <label class="lbl">終了日(1日なら同じ日付)</label>
-            <input type="date" id="req-end">
-          </div>
+          <div><label class="lbl">開始日</label><input type="date" id="req-start"></div>
+          <div><label class="lbl">終了日(1日なら同じ日付)</label><input type="date" id="req-end"></div>
         </div>
-        <div class="mt3">
-          <label class="lbl">事由(任意)</label>
-          <input type="text" id="req-reason" placeholder="私用のため など">
-        </div>
+        <div class="mt3"><label class="lbl">事由(任意)</label><input type="text" id="req-reason" placeholder="私用のため など"></div>
         <div class="flex-between mt4">
           <span class="text-sub">申請日数: <strong id="req-days-preview">0</strong> 日 <span style="font-size:11px;">※土日を除く</span></span>
-          <button class="btn btn-shu" id="req-submit-btn" onclick="submitRequest()">申請する</button>
+          <button class="btn btn-shu" id="req-submit-btn">申請する</button>
         </div>
         <div id="req-msg"></div>
       </div>
-
-      <!-- 申請履歴 -->
       <div class="card">
         <div class="card-title ink">申請履歴</div>
-        <div class="req-list" id="my-req-list">
-          <p class="text-sub" id="my-req-empty">まだ申請はありません。</p>
-        </div>
+        <div class="req-list" id="my-req-list"><p class="text-sub">まだ申請はありません。</p></div>
       </div>
     </div>
-
-    <!-- ======= 管理者ビュー ======= -->
+    <!-- 管理者 -->
     <div id="view-admin" class="hidden">
-
-      <!-- 承認待ち -->
       <div class="card">
-        <div class="card-title shu">承認待ちの申請 (<span id="admin-pending-count">0</span>件)</div>
-        <div id="admin-pending-list">
-          <p class="text-sub" id="admin-pending-empty">承認待ちの申請はありません。</p>
-        </div>
+        <div class="card-title shu">承認待ちの申請（<span id="admin-pending-count">0</span>件）</div>
+        <div id="admin-pending-list"><p class="text-sub">承認待ちの申請はありません。</p></div>
       </div>
-
-      <!-- 従業員一覧 -->
       <div class="card">
         <div class="card-title ink">従業員と付与日数</div>
         <div style="overflow-x:auto;">
-          <table class="tbl" id="emp-table">
-            <thead>
-              <tr>
-                <th style="text-align:left;">氏名</th>
-                <th>付与</th><th>使用</th><th>申請中</th><th>残</th><th></th>
-              </tr>
-            </thead>
-            <tbody id="emp-tbody"></tbody>
-          </table>
+          <table class="tbl"><thead><tr><th style="text-align:left;">氏名</th><th>付与</th><th>使用</th><th>申請中</th><th>残</th><th></th></tr></thead>
+          <tbody id="emp-tbody"></tbody></table>
         </div>
-        <p class="text-sub mt3" id="emp-empty" class="hidden">下のフォームから追加してください。</p>
-
+        <p class="text-sub mt3" id="emp-empty">下のフォームから追加してください。</p>
         <hr class="divider">
         <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;">
-          <div style="flex:1;min-width:160px;">
-            <label class="lbl">氏名</label>
-            <input type="text" id="new-emp-name" placeholder="山田 太郎">
-          </div>
-          <div style="width:110px;">
-            <label class="lbl">付与日数</label>
-            <input type="number" id="new-emp-granted" value="10" min="0" step="1">
-          </div>
-          <button class="btn btn-ink" onclick="addEmployee()">追加</button>
+          <div style="flex:1;min-width:160px;"><label class="lbl">氏名</label><input type="text" id="new-emp-name" placeholder="山田 太郎"></div>
+          <div style="width:110px;"><label class="lbl">付与日数</label><input type="number" id="new-emp-granted" value="10" min="0" step="1"></div>
+          <button class="btn btn-ink" id="add-emp-btn">追加</button>
         </div>
         <p class="text-sub mt2">※付与日数は法定基準に合わせて手動で設定してください。祝日は計算から除外されません。</p>
       </div>
     </div>
-
-    <!-- ローディング -->
-    <div id="main-loading" class="card" style="text-align:center;color:var(--sub);">
-      <span class="loader" style="border-top-color:var(--sub);"></span>読み込み中…
+    <div id="main-loading" class="card" style="text-align:center;color:var(--sub);padding:30px;">
+      <span class="loader loader-dark"></span>読み込み中…
     </div>
   </main>
 </div>
 
 <script>
 // ======================================================
-//  状態管理
+//  状態
 // ======================================================
-let state = {
-  account: null,
-  isAdmin: false,
-  employees: [],
-  requests: [],
-  myEmployee: null, // accountと同名の従業員レコード
-  currentView: "employee",
-};
+let state = { account:null, isAdmin:false, employees:[], requests:[], myEmployee:null, currentView:"employee" };
 
 // ======================================================
 //  ユーティリティ
 // ======================================================
-function todayStr() {
-  const t = new Date(), p = n => String(n).padStart(2,"0");
-  return `${t.getFullYear()}-${p(t.getMonth()+1)}-${p(t.getDate())}`;
-}
-function fmtDate(s) {
-  if (!s) return "";
-  const [y,m,d] = s.split("-");
-  return `${y}/${Number(m)}/${Number(d)}`;
-}
-function countBusinessDays(s, e) {
-  const start = new Date(s+"T00:00:00"), end = new Date(e+"T00:00:00");
-  if (isNaN(start)||isNaN(end)||start>end) return 0;
-  let c=0, d=new Date(start);
+function todayStr(){const t=new Date(),p=n=>String(n).padStart(2,"0");return `${t.getFullYear()}-${p(t.getMonth()+1)}-${p(t.getDate())}`;}
+function fmtDate(s){if(!s)return "";const[y,m,d]=s.split("-");return `${y}/${Number(m)}/${Number(d)}`;}
+function countBusinessDays(s,e){
+  const start=new Date(s+"T00:00:00"),end=new Date(e+"T00:00:00");
+  if(isNaN(start)||isNaN(end)||start>end)return 0;
+  let c=0,d=new Date(start);
   while(d<=end){const w=d.getDay();if(w!==0&&w!==6)c++;d.setDate(d.getDate()+1);}
   return c;
 }
-function summarize(emp, requests) {
-  const mine = requests.filter(r=>r.employeeId===emp.id);
-  const used = mine.filter(r=>r.status==="approved").reduce((s,r)=>s+r.days,0);
-  const pending = mine.filter(r=>r.status==="pending").reduce((s,r)=>s+r.days,0);
-  return { used, pending, remaining: emp.granted-used };
+function summarize(emp,requests){
+  const mine=requests.filter(r=>r.employeeId===emp.id);
+  const used=mine.filter(r=>r.status==="approved").reduce((s,r)=>s+r.days,0);
+  const pending=mine.filter(r=>r.status==="pending").reduce((s,r)=>s+r.days,0);
+  return{used,pending,remaining:emp.granted-used};
 }
-function statusLabel(s) {
-  return {pending:"申請中",approved:"承認済",rejected:"却下",cancelled:"取下げ"}[s]||s;
-}
-function statusClass(s) {
-  return {pending:"s-pending",approved:"s-approved",rejected:"s-rejected",cancelled:"s-cancelled"}[s]||"";
-}
-function el(id){ return document.getElementById(id); }
-function setMsg(id, text, type="ok") {
-  const d = el(id);
-  d.innerHTML = text ? `<div class="alert alert-${type}">${text}</div>` : "";
-}
+function statusLabel(s){return{pending:"申請中",approved:"承認済",rejected:"却下",cancelled:"取下げ"}[s]||s;}
+function statusClass(s){return{pending:"s-pending",approved:"s-approved",rejected:"s-rejected",cancelled:"s-cancelled"}[s]||"";}
+function el(id){return document.getElementById(id);}
+function setMsg(id,text,type="ok"){el(id).innerHTML=text?`<div class="alert alert-${type}">${text}</div>`:"";}
 
 // ======================================================
-//  GAS API 呼び出し
+//  GAS API — 全てGETパラメータで送信
 // ======================================================
-async function gasGet(params) {
-  const url = GAS_URL + "?" + new URLSearchParams(params);
-  const res = await fetch(url);
-  return res.json();
-}
-async function gasPost(body) {
-  const res = await fetch(GAS_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
+async function gasCall(params){
+  const url=GAS_URL+"?"+new URLSearchParams(params);
+  const res=await fetch(url);
   return res.json();
 }
 
 // ======================================================
 //  初期化
 // ======================================================
-window.addEventListener("DOMContentLoaded", () => {
-  if (!GAS_URL) el("setup-banner").classList.remove("hidden");
-
-  // ログイン済みセッション復元
-  const saved = sessionStorage.getItem("yukyu-session");
-  if (saved) {
-    const s = JSON.parse(saved);
-    state.account = s.account;
-    state.isAdmin = s.isAdmin;
-    showMain();
-  }
+window.addEventListener("DOMContentLoaded",()=>{
+  // セッション復元
+  const saved=sessionStorage.getItem("yukyu-session");
+  if(saved){const s=JSON.parse(saved);state.account=s.account;state.isAdmin=s.isAdmin;showMain();}
 
   // 日付初期値
-  const today = todayStr();
-  if(el("req-start")) el("req-start").value = today;
-  if(el("req-end"))   el("req-end").value   = today;
+  const today=todayStr();
+  el("req-start").value=today; el("req-end").value=today;
 
-  // 日数プレビュー更新
-  ["req-start","req-end"].forEach(id => {
-    const inp = el(id);
-    if (inp) inp.addEventListener("change", updateDaysPreview);
+  // イベント
+  el("login-btn").addEventListener("click",doLogin);
+  el("logout-btn").addEventListener("click",doLogout);
+  el("req-submit-btn").addEventListener("click",submitRequest);
+  el("add-emp-btn").addEventListener("click",addEmployee);
+  el("req-start").addEventListener("change",updateDaysPreview);
+  el("req-end").addEventListener("change",updateDaysPreview);
+  ["login-account","login-password"].forEach(id=>{
+    el(id).addEventListener("keydown",e=>{if(e.key==="Enter")doLogin();});
   });
 });
 
 // ======================================================
 //  ログイン / ログアウト
 // ======================================================
-async function doLogin() {
-  if (!GAS_URL) { setMsg("login-msg","GAS_URL が未設定です。","err"); return; }
-  const account  = el("login-account").value.trim();
-  const password = el("login-password").value.trim();
-  if (!account || !password) { setMsg("login-msg","アカウント名とパスワードを入力してください。","err"); return; }
-
-  const btn = el("login-btn");
-  btn.disabled = true;
-  btn.innerHTML = '<span class="loader"></span>認証中…';
+async function doLogin(){
+  const account=el("login-account").value.trim();
+  const password=el("login-password").value.trim();
+  if(!account||!password){setMsg("login-msg","アカウント名とパスワードを入力してください。","err");return;}
+  const btn=el("login-btn");
+  btn.disabled=true; btn.innerHTML='<span class="loader"></span>認証中…';
   setMsg("login-msg","");
-
-  try {
-    const data = await gasGet({ action:"login", account, password });
-    if (data.ok) {
-      state.account = data.account;
-      state.isAdmin = data.isAdmin;
-      sessionStorage.setItem("yukyu-session", JSON.stringify({ account: data.account, isAdmin: data.isAdmin }));
+  try{
+    const data=await gasCall({action:"login",account,password});
+    if(data.ok){
+      state.account=data.account; state.isAdmin=data.isAdmin;
+      sessionStorage.setItem("yukyu-session",JSON.stringify({account:data.account,isAdmin:data.isAdmin}));
       showMain();
-    } else {
-      setMsg("login-msg", data.error || "ログインに失敗しました。", "err");
-    }
-  } catch(e) {
-    setMsg("login-msg","通信エラーが発生しました。GAS URLを確認してください。","err");
-  } finally {
-    btn.disabled = false;
-    btn.textContent = "ログイン";
-  }
+    }else{setMsg("login-msg",data.error||"ログインに失敗しました。","err");}
+  }catch(e){setMsg("login-msg","通信エラーが発生しました。GAS URLを確認してください。","err");}
+  finally{btn.disabled=false;btn.textContent="ログイン";}
 }
 
-// Enterキーでログイン
-["login-account","login-password"].forEach(id => {
-  setTimeout(()=>{
-    const inp = el(id);
-    if(inp) inp.addEventListener("keydown", e=>{ if(e.key==="Enter") doLogin(); });
-  },0);
-});
-
-function doLogout() {
+function doLogout(){
   sessionStorage.removeItem("yukyu-session");
-  state = { account:null, isAdmin:false, employees:[], requests:[], myEmployee:null, currentView:"employee" };
+  state={account:null,isAdmin:false,employees:[],requests:[],myEmployee:null,currentView:"employee"};
   el("page-login").classList.remove("hidden");
   el("page-main").classList.add("hidden");
-  el("login-account").value = "";
-  el("login-password").value = "";
+  el("login-account").value=""; el("login-password").value="";
   setMsg("login-msg","");
 }
 
 // ======================================================
-//  メイン画面表示
+//  メイン画面
 // ======================================================
-function showMain() {
+function showMain(){
   el("page-login").classList.add("hidden");
   el("page-main").classList.remove("hidden");
-  el("header-username").textContent = state.account + " さん";
-
-  // タブ構築
-  const tg = el("tab-group");
-  tg.innerHTML = "";
-  const tabs = [["employee","マイページ"]];
-  if (state.isAdmin) tabs.push(["admin","管理者"]);
-  tabs.forEach(([id, label]) => {
-    const btn = document.createElement("button");
-    btn.className = "tab-btn" + (state.currentView===id?" active":"");
-    btn.dataset.view = id;
-    btn.textContent = label;
-    if (id==="admin") btn.id = "admin-tab-btn";
-    btn.addEventListener("click", () => switchView(id));
-    tg.appendChild(btn);
-  });
-
+  el("header-username").textContent=state.account+" さん";
+  buildTabs();
   loadData();
 }
 
-function switchView(view) {
-  state.currentView = view;
-  document.querySelectorAll(".tab-btn").forEach(b => {
-    b.classList.toggle("active", b.dataset.view===view);
+function buildTabs(){
+  const tg=el("tab-group"); tg.innerHTML="";
+  const tabs=[["employee","マイページ"]];
+  if(state.isAdmin)tabs.push(["admin","管理者"]);
+  tabs.forEach(([id,label])=>{
+    const btn=document.createElement("button");
+    btn.className="tab-btn"+(state.currentView===id?" active":"");
+    btn.dataset.view=id; btn.textContent=label;
+    if(id==="admin")btn.id="admin-tab-btn";
+    btn.addEventListener("click",()=>switchView(id));
+    tg.appendChild(btn);
   });
-  el("view-employee").classList.toggle("hidden", view!=="employee");
-  el("view-admin").classList.toggle("hidden", view!=="admin");
+}
+
+function switchView(view){
+  state.currentView=view;
+  document.querySelectorAll(".tab-btn").forEach(b=>b.classList.toggle("active",b.dataset.view===view));
+  el("view-employee").classList.toggle("hidden",view!=="employee");
+  el("view-admin").classList.toggle("hidden",view!=="admin");
 }
 
 // ======================================================
 //  データ読み込み
 // ======================================================
-async function loadData() {
+async function loadData(){
   el("main-loading").classList.remove("hidden");
   el("view-employee").classList.add("hidden");
   el("view-admin").classList.add("hidden");
-  try {
-    const [empRes, reqRes] = await Promise.all([
-      gasGet({ action:"getEmployees" }),
-      gasGet({ action:"getRequests" }),
+  try{
+    const[empRes,reqRes]=await Promise.all([
+      gasCall({action:"getEmployees"}),
+      gasCall({action:"getRequests"}),
     ]);
-    state.employees = empRes.employees || [];
-    state.requests  = reqRes.requests  || [];
-
-    // アカウント名と一致する従業員を探す
-    state.myEmployee = state.employees.find(e => e.name === state.account) || null;
-
+    state.employees=empRes.employees||[];
+    state.requests=reqRes.requests||[];
+    state.myEmployee=state.employees.find(e=>e.name===state.account)||null;
     render();
-  } catch(e) {
-    alert("データの読み込みに失敗しました。通信環境を確認してください。");
-  } finally {
-    el("main-loading").classList.add("hidden");
-  }
+  }catch(e){alert("データの読み込みに失敗しました。通信環境を確認してください。");}
+  finally{el("main-loading").classList.add("hidden");}
 }
 
 // ======================================================
 //  描画
 // ======================================================
-function render() {
+function render(){
   renderEmployee();
-  if (state.isAdmin) renderAdmin();
+  if(state.isAdmin)renderAdmin();
   switchView(state.currentView);
   updateAdminBadge();
 }
 
-// ── マイページ ──
-function renderEmployee() {
-  const emp = state.myEmployee;
-  if (!emp) {
-    // 名前が名簿にない場合のメッセージ
-    el("stat-card").innerHTML = `
-      <p style="color:var(--sub);font-size:14px;">
-        あなたのアカウント名「<strong>${state.account}</strong>」と一致する従業員が名簿にありません。<br>
-        管理者に名前の登録を依頼してください(名前はアカウント名と同じに設定する必要があります)。
-      </p>`;
-    el("view-employee").querySelector(".card:nth-child(2)").classList.add("hidden");
-    el("view-employee").querySelector(".card:nth-child(3)").classList.add("hidden");
+function renderEmployee(){
+  const emp=state.myEmployee;
+  if(!emp){
+    el("stat-card").innerHTML=`<p style="color:var(--sub);font-size:14px;">
+      アカウント名「<strong>${state.account}</strong>」と一致する従業員が名簿にありません。<br>
+      管理者に従業員名の登録を依頼してください（名前はアカウント名と完全一致が必要です）。</p>`;
+    el("req-form-card").classList.add("hidden");
     return;
   }
+  el("req-form-card").classList.remove("hidden");
+  const s=summarize(emp,state.requests);
+  el("stat-remaining").textContent=s.remaining;
+  el("stat-remaining").className="big-num"+(s.remaining<=3?" warn":"");
+  el("stat-granted").textContent=emp.granted;
+  el("stat-used").textContent=s.used;
+  el("stat-pending").textContent=s.pending;
 
-  // 残日数
-  const s = summarize(emp, state.requests);
-  el("stat-remaining").textContent = s.remaining;
-  el("stat-remaining").className = "big-num" + (s.remaining<=3?" warn":"");
-  el("stat-granted").textContent  = emp.granted;
-  el("stat-used").textContent     = s.used;
-  el("stat-pending").textContent  = s.pending;
-
-  // 申請フォームの各カードを表示
-  el("view-employee").querySelectorAll(".card").forEach(c=>c.classList.remove("hidden"));
-
-  // 申請履歴
-  const myReqs = state.requests.filter(r=>r.employeeId===emp.id);
-  const list   = el("my-req-list");
-  const empty  = el("my-req-empty");
-  if (myReqs.length === 0) {
-    list.innerHTML = "";
-    if(!empty) list.insertAdjacentHTML("beforeend",'<p class="text-sub" id="my-req-empty">まだ申請はありません。</p>');
-    return;
-  }
-  list.innerHTML = myReqs.map(r => `
+  const myReqs=state.requests.filter(r=>r.employeeId===emp.id);
+  const list=el("my-req-list");
+  if(myReqs.length===0){list.innerHTML='<p class="text-sub">まだ申請はありません。</p>';return;}
+  list.innerHTML=myReqs.map(r=>`
     <div class="req-item">
       <div class="req-meta">
         <div class="req-date">
@@ -567,29 +379,22 @@ function renderEmployee() {
     </div>`).join("");
 }
 
-function updateDaysPreview() {
-  const s = el("req-start").value, e = el("req-end").value;
-  el("req-days-preview").textContent = countBusinessDays(s,e);
+function updateDaysPreview(){
+  el("req-days-preview").textContent=countBusinessDays(el("req-start").value,el("req-end").value);
 }
 
-// ── 管理者 ──
-function renderAdmin() {
-  const pending = state.requests.filter(r=>r.status==="pending");
-  el("admin-pending-count").textContent = pending.length;
-
-  // 承認待ち
-  const plist = el("admin-pending-list");
-  if (pending.length===0) {
-    plist.innerHTML = '<p class="text-sub" id="admin-pending-empty">承認待ちの申請はありません。</p>';
-  } else {
-    plist.innerHTML = pending.map(r=>{
-      const emp = state.employees.find(e=>e.id===r.employeeId);
+function renderAdmin(){
+  const pending=state.requests.filter(r=>r.status==="pending");
+  el("admin-pending-count").textContent=pending.length;
+  const plist=el("admin-pending-list");
+  if(pending.length===0){plist.innerHTML='<p class="text-sub">承認待ちの申請はありません。</p>';}
+  else{
+    plist.innerHTML=pending.map(r=>{
+      const emp=state.employees.find(e=>e.id===r.employeeId);
       return `<div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);flex-wrap:wrap;">
         <div style="flex:1;min-width:180px;">
           <div style="font-weight:700;">${emp?emp.name:"(削除済)"}</div>
-          <div class="text-sub" style="margin-top:2px;">
-            ${fmtDate(r.startDate)}${r.startDate!==r.endDate?" 〜 "+fmtDate(r.endDate):""}・${r.days}日${r.reason?"・"+r.reason:""}
-          </div>
+          <div class="text-sub" style="margin-top:2px;">${fmtDate(r.startDate)}${r.startDate!==r.endDate?" 〜 "+fmtDate(r.endDate):""}・${r.days}日${r.reason?"・"+r.reason:""}</div>
         </div>
         <div style="display:flex;gap:8px;">
           <button class="btn btn-shu" style="font-size:13px;padding:6px 16px;" onclick="decide('${r.id}','approved')">承認</button>
@@ -599,18 +404,13 @@ function renderAdmin() {
     }).join("");
   }
 
-  // 従業員テーブル
-  const tbody = el("emp-tbody");
-  if (state.employees.length===0) {
-    tbody.innerHTML = "";
-    return;
-  }
-  tbody.innerHTML = state.employees.map(e=>{
-    const s = summarize(e, state.requests);
+  const tbody=el("emp-tbody");
+  el("emp-empty").classList.toggle("hidden",state.employees.length>0);
+  tbody.innerHTML=state.employees.map(e=>{
+    const s=summarize(e,state.requests);
     return `<tr>
       <td>${e.name}${e.name===state.account?'<span style="font-size:11px;color:var(--sub);margin-left:4px;">(あなた)</span>':""}</td>
-      <td><input type="number" min="0" step="1" value="${e.granted}" style="width:70px;text-align:right;"
-           onchange="updateGranted('${e.id}',this.value)"></td>
+      <td><input type="number" min="0" step="1" value="${e.granted}" style="width:70px;text-align:right;" onchange="updateGranted('${e.id}',this.value)"></td>
       <td>${s.used}</td>
       <td class="${s.pending>0?"amber-cell":""}">${s.pending}</td>
       <td class="${s.remaining<=3?"warn-cell":""}">${s.remaining}</td>
@@ -619,98 +419,71 @@ function renderAdmin() {
   }).join("");
 }
 
-function updateAdminBadge() {
-  const btn = el("admin-tab-btn");
-  if (!btn) return;
-  const count = state.requests.filter(r=>r.status==="pending").length;
-  const existing = btn.querySelector(".badge");
-  if (existing) existing.remove();
-  if (count>0) btn.insertAdjacentHTML("beforeend",`<span class="badge">${count}</span>`);
+function updateAdminBadge(){
+  const btn=el("admin-tab-btn");
+  if(!btn)return;
+  const count=state.requests.filter(r=>r.status==="pending").length;
+  const ex=btn.querySelector(".badge");
+  if(ex)ex.remove();
+  if(count>0)btn.insertAdjacentHTML("beforeend",`<span class="badge">${count}</span>`);
 }
 
 // ======================================================
 //  操作
 // ======================================================
-async function submitRequest() {
-  const emp = state.myEmployee;
-  if (!emp) return;
-  const startDate = el("req-start").value;
-  const endDate   = el("req-end").value;
-  const reason    = el("req-reason").value.trim();
-  const days      = countBusinessDays(startDate, endDate);
-
-  if (days<=0) { setMsg("req-msg","日付を確認してください(終了日は開始日以降、土日のみの期間は申請できません)。","err"); return; }
-
-  const s = summarize(emp, state.requests);
-  if (days > s.remaining - s.pending) {
-    setMsg("req-msg",`残日数が不足しています(申請可能:${s.remaining-s.pending}日)。`,"err"); return;
-  }
-
-  const btn = el("req-submit-btn");
-  btn.disabled = true; btn.innerHTML = '<span class="loader"></span>送信中…';
+async function submitRequest(){
+  const emp=state.myEmployee; if(!emp)return;
+  const startDate=el("req-start").value, endDate=el("req-end").value;
+  const reason=el("req-reason").value.trim();
+  const days=countBusinessDays(startDate,endDate);
+  if(days<=0){setMsg("req-msg","日付を確認してください(終了日は開始日以降、土日のみの期間は申請できません)。","err");return;}
+  const s=summarize(emp,state.requests);
+  if(days>s.remaining-s.pending){setMsg("req-msg",`残日数が不足しています(申請可能:${s.remaining-s.pending}日)。`,"err");return;}
+  const btn=el("req-submit-btn");
+  btn.disabled=true; btn.innerHTML='<span class="loader"></span>送信中…';
   setMsg("req-msg","");
-
-  try {
-    const res = await gasPost({
-      action:"addRequest", employeeId:emp.id,
-      startDate, endDate, days, reason,
-      status:"pending", createdAt: todayStr()
-    });
-    if (res.ok) {
-      el("req-reason").value = "";
-      setMsg("req-msg",`申請しました(${days}日)。承認をお待ちください。`,"ok");
-      await loadData();
-    } else {
-      setMsg("req-msg", res.error||"申請に失敗しました。","err");
-    }
-  } catch { setMsg("req-msg","通信エラーが発生しました。","err"); }
-  finally { btn.disabled=false; btn.textContent="申請する"; }
+  try{
+    const res=await gasCall({action:"addRequest",employeeId:emp.id,startDate,endDate,days,reason,status:"pending",createdAt:todayStr()});
+    if(res.ok){el("req-reason").value="";setMsg("req-msg",`申請しました(${days}日)。承認をお待ちください。`,"ok");await loadData();}
+    else{setMsg("req-msg",res.error||"申請に失敗しました。","err");}
+  }catch{setMsg("req-msg","通信エラーが発生しました。","err");}
+  finally{btn.disabled=false;btn.textContent="申請する";}
 }
 
-async function cancelRequest(id) {
-  if(!confirm("この申請を取り下げますか?")) return;
-  try {
-    await gasPost({ action:"updateRequest", id, status:"cancelled", decidedAt:"" });
-    await loadData();
-  } catch { alert("通信エラー"); }
+async function cancelRequest(id){
+  if(!confirm("この申請を取り下げますか？"))return;
+  try{await gasCall({action:"updateRequest",id,status:"cancelled",decidedAt:""});await loadData();}
+  catch{alert("通信エラー");}
 }
 
-async function decide(id, status) {
-  try {
-    await gasPost({ action:"updateRequest", id, status, decidedAt: todayStr() });
-    await loadData();
-  } catch { alert("通信エラー"); }
+async function decide(id,status){
+  try{await gasCall({action:"updateRequest",id,status,decidedAt:todayStr()});await loadData();}
+  catch{alert("通信エラー");}
 }
 
-async function addEmployee() {
-  const name    = el("new-emp-name").value.trim();
-  const granted = Number(el("new-emp-granted").value);
-  if (!name) { alert("氏名を入力してください"); return; }
-  try {
-    const res = await gasPost({ action:"addEmployee", name, granted });
-    if (res.ok) {
-      el("new-emp-name").value = "";
-      el("new-emp-granted").value = "10";
-      await loadData();
-    } else { alert(res.error||"追加に失敗しました"); }
-  } catch { alert("通信エラー"); }
+async function addEmployee(){
+  const name=el("new-emp-name").value.trim();
+  const granted=Number(el("new-emp-granted").value);
+  if(!name){alert("氏名を入力してください");return;}
+  try{
+    const res=await gasCall({action:"addEmployee",name,granted});
+    if(res.ok){el("new-emp-name").value="";el("new-emp-granted").value="10";await loadData();}
+    else{alert(res.error||"追加に失敗しました");}
+  }catch{alert("通信エラー");}
 }
 
-async function updateGranted(id, value) {
-  try {
-    await gasPost({ action:"updateGranted", id, granted: Number(value) });
-    // 反映のみ(再レンダリングはinputのchangeで十分)
-    const emp = state.employees.find(e=>e.id===id);
-    if (emp) { emp.granted = Number(value); renderAdmin(); }
-  } catch { alert("通信エラー"); }
+async function updateGranted(id,value){
+  try{
+    await gasCall({action:"updateGranted",id,granted:Number(value)});
+    const emp=state.employees.find(e=>e.id===id);
+    if(emp){emp.granted=Number(value);renderAdmin();}
+  }catch{alert("通信エラー");}
 }
 
-async function removeEmployee(id, name) {
-  if (!confirm(`「${name}」を削除します。申請履歴も削除されます。よろしいですか?`)) return;
-  try {
-    await gasPost({ action:"removeEmployee", id });
-    await loadData();
-  } catch { alert("通信エラー"); }
+async function removeEmployee(id,name){
+  if(!confirm(`「${name}」を削除します。申請履歴も削除されます。よろしいですか？`))return;
+  try{await gasCall({action:"removeEmployee",id});await loadData();}
+  catch{alert("通信エラー");}
 }
 </script>
 </body>
