@@ -89,7 +89,7 @@
 
 <script>
 // ★ GAS デプロイURL
-const GAS_URL = "https://script.google.com/macros/s/AKfycbzGiAr1uO8tX2UVWD7htwWTMKNaW3kcg97nxCDLq8vt_Re5Bj7dfzFgFDarBBkDziDm/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbygwdjOQItjZQ6bvtB7NG5zIbFJtc3-YzL08OGmeKldF-SDLVlqpDH5nHTAbihWyaAw/exec";
 </script>
 
 <!-- ログイン画面 -->
@@ -170,19 +170,12 @@ const GAS_URL = "https://script.google.com/macros/s/AKfycbzGiAr1uO8tX2UVWD7htwWT
         <div id="admin-pending-list"><p class="text-sub">承認待ちの申請はありません。</p></div>
       </div>
       <div class="card">
-        <div class="card-title ink">従業員と付与日数</div>
+        <div class="card-title ink">従業員と有給残日数</div>
         <div style="overflow-x:auto;">
-          <table class="tbl"><thead><tr><th style="text-align:left;">氏名</th><th>付与</th><th>使用</th><th>申請中</th><th>残</th><th></th></tr></thead>
+          <table class="tbl"><thead><tr><th style="text-align:left;">氏名</th><th>付与</th><th>使用</th><th>申請中</th><th>残</th></tr></thead>
           <tbody id="emp-tbody"></tbody></table>
         </div>
-        <p class="text-sub mt3" id="emp-empty">下のフォームから追加してください。</p>
-        <hr class="divider">
-        <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;">
-          <div style="flex:1;min-width:160px;"><label class="lbl">氏名</label><input type="text" id="new-emp-name" placeholder="山田 太郎"></div>
-          <div style="width:110px;"><label class="lbl">付与日数</label><input type="number" id="new-emp-granted" value="10" min="0" step="1"></div>
-          <button class="btn btn-ink" id="add-emp-btn">追加</button>
-        </div>
-        <p class="text-sub mt2">※付与日数は法定基準に合わせて手動で設定してください。祝日は計算から除外されません。</p>
+        <p class="text-sub mt3">※従業員の追加・削除・付与日数の変更は「共通_社員マスタ」シートで行ってください。</p>
       </div>
     </div>
     <div id="main-loading" class="card" style="text-align:center;color:var(--sub);padding:30px;">
@@ -245,7 +238,6 @@ window.addEventListener("DOMContentLoaded",()=>{
   el("login-btn").addEventListener("click",doLogin);
   el("logout-btn").addEventListener("click",doLogout);
   el("req-submit-btn").addEventListener("click",submitRequest);
-  el("add-emp-btn").addEventListener("click",addEmployee);
   el("req-start").addEventListener("change",updateDaysPreview);
   el("req-end").addEventListener("change",updateDaysPreview);
   ["login-account","login-password"].forEach(id=>{
@@ -406,16 +398,14 @@ function renderAdmin(){
   }
 
   const tbody=el("emp-tbody");
-  el("emp-empty").classList.toggle("hidden",state.employees.length>0);
   tbody.innerHTML=state.employees.map(e=>{
     const s=summarize(e,state.requests);
     return `<tr>
       <td>${e.name}${e.name===state.account?'<span style="font-size:11px;color:var(--sub);margin-left:4px;">(あなた)</span>':""}</td>
-      <td><input type="number" min="0" step="1" value="${e.granted}" style="width:70px;text-align:right;" onchange="updateGranted('${e.id}',this.value)"></td>
+      <td>${e.granted}</td>
       <td>${s.used}</td>
       <td class="${s.pending>0?"amber-cell":""}">${s.pending}</td>
       <td class="${s.remaining<=3?"warn-cell":""}">${s.remaining}</td>
-      <td><button class="btn btn-ghost" style="font-size:11px;padding:3px 8px;" onclick="removeEmployee('${e.id}','${e.name}')">削除</button></td>
     </tr>`;
   }).join("");
 }
@@ -462,10 +452,6 @@ async function decide(id,status){
   catch{alert("通信エラー");}
 }
 
-async function addEmployee(){
-  const name=el("new-emp-name").value.trim();
-  const granted=Number(el("new-emp-granted").value);
-  if(!name){alert("氏名を入力してください");return;}
   try{
     const res=await gasCall({action:"addEmployee",name,granted});
     if(res.ok){el("new-emp-name").value="";el("new-emp-granted").value="10";await loadData();}
@@ -473,17 +459,9 @@ async function addEmployee(){
   }catch{alert("通信エラー");}
 }
 
-async function updateGranted(id,value){
-  try{
-    await gasCall({action:"updateGranted",id,granted:Number(value)});
-    const emp=state.employees.find(e=>e.id===id);
-    if(emp){emp.granted=Number(value);renderAdmin();}
   }catch{alert("通信エラー");}
 }
 
-async function removeEmployee(id,name){
-  if(!confirm(`「${name}」を削除します。申請履歴も削除されます。よろしいですか？`))return;
-  try{await gasCall({action:"removeEmployee",id});await loadData();}
   catch{alert("通信エラー");}
 }
 </script>
