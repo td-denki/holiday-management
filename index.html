@@ -3,691 +3,558 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>経費立替管理 | 匡電気管理事務所</title>
+<title>有給休暇管理</title>
 <style>
-  /* ─── Design tokens ─── */
   :root {
-    --bg:        #F7F8FA;
-    --surface:   #FFFFFF;
-    --border:    #E2E6EA;
-    --primary:   #1A56DB;
-    --primary-h: #1441B0;
-    --danger:    #C81E1E;
-    --success:   #057A55;
-    --warn:      #B45309;
-    --text:      #111928;
-    --muted:     #6B7280;
-    --radius:    8px;
-    --shadow:    0 1px 4px rgba(0,0,0,.08);
-    --font:      'Hiragino Sans', 'Meiryo', sans-serif;
+    --ink:#1C2B3A; --sub:#7B8894; --paper:#F4F6F7; --card:#FFFFFF;
+    --line:#DDE3E7; --shu:#C73E3A; --shu-soft:#FBEEED;
+    --amber:#9A6B00; --amber-soft:#FBF3DF; --gray-soft:#EEF0F1; --radius:8px;
+    --font:"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP",sans-serif;
   }
-
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    font-family: var(--font);
-    background: var(--bg);
-    color: var(--text);
-    font-size: 14px;
-    min-height: 100vh;
-  }
-
-  /* ─── Header ─── */
-  header {
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    padding: 0 20px;
-    height: 52px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
-  .logo {
-    font-size: 15px;
-    font-weight: 700;
-    color: var(--primary);
-    letter-spacing: -.3px;
-  }
-  .logo span { color: var(--text); font-weight: 400; }
-  #userInfo {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 13px;
-    color: var(--muted);
-  }
-  #btnLogout {
-    background: none;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 4px 12px;
-    font-size: 12px;
-    cursor: pointer;
-    color: var(--muted);
-  }
-  #btnLogout:hover { background: var(--bg); }
-
-  /* ─── Tabs ─── */
-  .tabs {
-    display: flex;
-    gap: 2px;
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    padding: 0 20px;
-  }
-  .tab {
-    padding: 12px 18px;
-    font-size: 13px;
-    cursor: pointer;
-    border: none;
-    background: none;
-    color: var(--muted);
-    border-bottom: 2px solid transparent;
-    margin-bottom: -1px;
-    transition: color .15s;
-  }
-  .tab.active {
-    color: var(--primary);
-    border-bottom-color: var(--primary);
-    font-weight: 600;
-  }
-  .tab:hover:not(.active) { color: var(--text); }
-
-  /* ─── Main ─── */
-  main {
-    max-width: 900px;
-    margin: 24px auto;
-    padding: 0 16px;
-  }
-
-  /* ─── Card ─── */
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    padding: 24px;
-    margin-bottom: 16px;
-  }
-  .card h2 {
-    font-size: 15px;
-    font-weight: 700;
-    margin-bottom: 20px;
-    color: var(--text);
-  }
-
-  /* ─── Login ─── */
-  #loginWrap {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, #EBF0FF 0%, #F7F8FA 100%);
-  }
-  .loginCard {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    box-shadow: 0 4px 24px rgba(0,0,0,.10);
-    padding: 40px 36px;
-    width: 360px;
-  }
-  .loginCard h1 {
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--primary);
-    margin-bottom: 4px;
-  }
-  .loginCard p {
-    font-size: 12px;
-    color: var(--muted);
-    margin-bottom: 28px;
-  }
-
-  /* ─── Form ─── */
-  .formRow { margin-bottom: 14px; }
-  label {
-    display: block;
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--muted);
-    margin-bottom: 5px;
-    text-transform: uppercase;
-    letter-spacing: .4px;
-  }
-  input, select, textarea {
-    width: 100%;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 9px 12px;
-    font-size: 14px;
-    font-family: var(--font);
-    color: var(--text);
-    background: var(--surface);
-    transition: border-color .15s;
-  }
-  input:focus, select:focus, textarea:focus {
-    outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(26,86,219,.1);
-  }
-  textarea { resize: vertical; min-height: 72px; }
-
-  /* ─── Buttons ─── */
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 9px 18px;
-    border-radius: 6px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    border: none;
-    transition: background .15s, opacity .15s;
-  }
-  .btn:disabled { opacity: .5; cursor: not-allowed; }
-  .btn-primary { background: var(--primary); color: #fff; }
-  .btn-primary:hover:not(:disabled) { background: var(--primary-h); }
-  .btn-success { background: var(--success); color: #fff; }
-  .btn-success:hover:not(:disabled) { background: #046c4e; }
-  .btn-danger  { background: var(--danger);  color: #fff; }
-  .btn-danger:hover:not(:disabled)  { background: #9b1c1c; }
-  .btn-outline { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
-  .btn-outline:hover:not(:disabled) { background: var(--bg); }
-  .btn-warn    { background: var(--warn); color: #fff; }
-  .btn-warn:hover:not(:disabled) { background: #92400e; }
-  .btn-block { width: 100%; justify-content: center; }
-
-  /* ─── Badge / Status ─── */
-  .badge {
-    display: inline-block;
-    padding: 2px 9px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 700;
-    white-space: nowrap;
-  }
-  .badge-申請中  { background: #FEF3C7; color: #92400E; }
-  .badge-承認済み { background: #D1FAE5; color: #065F46; }
-  .badge-却下    { background: #FEE2E2; color: #991B1B; }
-  .badge-未精算  { background: #FEF3C7; color: #92400E; }
-  .badge-精算済み { background: #D1FAE5; color: #065F46; }
-
-  /* ─── Table ─── */
-  .tableWrap { overflow-x: auto; }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-  }
-  th {
-    background: var(--bg);
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: .4px;
-    padding: 10px 12px;
-    text-align: left;
-    border-bottom: 1px solid var(--border);
-    white-space: nowrap;
-  }
-  td {
-    padding: 12px 12px;
-    border-bottom: 1px solid var(--border);
-    vertical-align: middle;
-  }
-  tr:last-child td { border-bottom: none; }
-  tr:hover td { background: #F9FAFB; }
-  .amount { font-weight: 700; text-align: right; font-variant-numeric: tabular-nums; }
-
-  /* ─── Summary bar ─── */
-  .summaryBar {
-    display: flex;
-    gap: 16px;
-    flex-wrap: wrap;
-    margin-bottom: 20px;
-  }
-  .summaryItem {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 14px 20px;
-    flex: 1;
-    min-width: 130px;
-  }
-  .summaryItem .label { font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .4px; }
-  .summaryItem .value { font-size: 22px; font-weight: 700; margin-top: 4px; }
-  .summaryItem .value.blue   { color: var(--primary); }
-  .summaryItem .value.green  { color: var(--success); }
-  .summaryItem .value.orange { color: var(--warn); }
-
-  /* ─── Alert ─── */
-  .alert {
-    padding: 10px 14px;
-    border-radius: 6px;
-    font-size: 13px;
-    margin-bottom: 14px;
-  }
-  .alert-error   { background: #FEE2E2; color: var(--danger); }
-  .alert-success { background: #D1FAE5; color: var(--success); }
-  .alert-info    { background: #EBF5FF; color: var(--primary); }
-
-  /* ─── Empty ─── */
-  .empty {
-    text-align: center;
-    padding: 48px 0;
-    color: var(--muted);
-    font-size: 13px;
-  }
-  .empty svg { display: block; margin: 0 auto 12px; opacity: .4; }
-
-  /* ─── Util ─── */
-  .hidden { display: none !important; }
-  .flex   { display: flex; align-items: center; gap: 8px; }
-  .mt8    { margin-top: 8px; }
-  .mt16   { margin-top: 16px; }
-  .muted  { color: var(--muted); }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--paper);color:var(--ink);font-family:var(--font);min-height:100vh;}
+  header{background:var(--ink);padding:12px 16px;}
+  .header-inner{max-width:720px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+  .logo{display:flex;align-items:center;gap:10px;}
+  .logo-img{height:34px;background:#fff;border-radius:6px;padding:3px 8px;display:block;flex-shrink:0;}
+  .logo-img img{height:100%;width:auto;display:block;}
+  .logo h1{color:#fff;font-size:15px;letter-spacing:.05em;}
+  .user-name{color:rgba(255,255,255,.7);font-size:13px;}
+  .tab-group{display:flex;border:1px solid rgba(255,255,255,.3);border-radius:6px;overflow:hidden;}
+  .tab-btn{padding:6px 14px;font-size:13px;background:transparent;color:rgba(255,255,255,.85);border:none;cursor:pointer;}
+  .tab-btn.active{background:#fff;color:var(--ink);}
+  .badge{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;border-radius:9px;background:var(--shu);color:#fff;font-size:10px;padding:0 4px;margin-left:4px;}
+  main{max-width:720px;margin:0 auto;padding:20px 16px;display:flex;flex-direction:column;gap:16px;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;}
+  .card-title{font-weight:700;padding-left:10px;margin-bottom:14px;}
+  .card-title.shu{border-left:3px solid var(--shu);}
+  .card-title.ink{border-left:3px solid var(--ink);}
+  label.lbl{display:block;font-size:12px;color:var(--sub);margin-bottom:4px;}
+  input[type=text],input[type=password],input[type=date],input[type=number],select{width:100%;border:1px solid var(--line);border-radius:6px;padding:8px 10px;color:var(--ink);background:#fff;font-family:var(--font);font-size:14px;}
+  input:focus,select:focus{outline:2px solid var(--shu);border-color:transparent;}
+  .form-row{display:flex;gap:12px;flex-wrap:wrap;}
+  .form-row>div{flex:1;min-width:150px;}
+  .btn{padding:8px 20px;border-radius:6px;font-weight:700;font-size:14px;cursor:pointer;border:none;}
+  .btn-shu{background:var(--shu);color:#fff;}
+  .btn-ink{background:var(--ink);color:#fff;}
+  .btn-ghost{background:#fff;color:var(--sub);border:1px solid var(--line);font-weight:400;}
+  .btn:disabled{opacity:.5;cursor:not-allowed;}
+  .stat-grid{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  .big-num{font-size:52px;font-weight:700;line-height:1;}
+  .big-num.warn{color:var(--shu);}
+  .stat-items{display:flex;gap:20px;font-size:13px;color:var(--sub);}
+  .stat-items strong{color:var(--ink);}
+  .stat-items .amber{color:var(--amber);}
+  .status-badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:4px;}
+  .s-pending{background:var(--amber-soft);color:var(--amber);}
+  .s-approved{background:var(--shu-soft);color:var(--shu);}
+  .s-rejected{background:var(--gray-soft);color:var(--sub);}
+  .s-cancelled{background:var(--gray-soft);color:var(--sub);}
+  .req-list .req-item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);}
+  .req-list .req-item:last-child{border-bottom:none;}
+  .req-meta{flex:1;min-width:0;}
+  .req-date{font-weight:700;font-size:14px;}
+  .req-sub{font-size:12px;color:var(--sub);margin-top:2px;}
+  .req-cancel{font-size:11px;color:var(--sub);text-decoration:underline;cursor:pointer;background:none;border:none;margin-top:4px;}
+  .stamp{width:60px;height:60px;border-radius:50%;border:2.5px solid var(--shu);color:var(--shu);transform:rotate(-8deg);background:rgba(255,255,255,.6);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;user-select:none;}
+  .stamp-label{font-weight:700;font-size:14px;letter-spacing:.1em;}
+  .stamp-date{font-size:9px;}
+  .tbl{width:100%;border-collapse:collapse;font-size:13px;}
+  .tbl th{color:var(--sub);font-weight:400;padding:6px 4px;border-bottom:1px solid var(--line);text-align:right;}
+  .tbl th:first-child{text-align:left;}
+  .tbl td{padding:8px 4px;border-bottom:1px solid var(--line);text-align:right;vertical-align:middle;}
+  .tbl td:first-child{text-align:left;font-weight:700;}
+  .tbl input[type=number]{width:70px;padding:4px 6px;text-align:right;}
+  .tbl .warn-cell{color:var(--shu);font-weight:700;}
+  .tbl .amber-cell{color:var(--amber);}
+  .alert{font-size:13px;padding:10px 14px;border-radius:6px;margin-top:8px;}
+  .alert-ok{background:var(--shu-soft);color:var(--shu);}
+  .alert-err{background:var(--gray-soft);color:var(--ink);}
+  .login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+  .login-card{width:100%;max-width:380px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:32px 28px;}
+  .login-logo{display:flex;flex-direction:column;align-items:center;gap:8px;margin-bottom:28px;}
+  .login-logo-img{width:100%;max-width:280px;height:auto;display:block;}
+  .login-title{font-weight:700;font-size:17px;letter-spacing:.05em;}
+  .loader{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:6px;}
+  .loader-dark{border-color:rgba(0,0,0,.15);border-top-color:var(--sub);}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .divider{border:none;border-top:1px solid var(--line);margin:14px 0;}
+  .text-sub{font-size:12px;color:var(--sub);}
+  .mt2{margin-top:8px;} .mt3{margin-top:12px;} .mt4{margin-top:16px;}
+  .flex-between{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
+  .hidden{display:none!important;}
+  .link-btn{background:none;border:none;color:var(--sub);font-size:12px;cursor:pointer;text-decoration:underline;padding:0;}
+  .link-btn:hover{color:var(--ink);}
+  .panel-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;z-index:100;padding:20px;}
+  .panel-card{background:#fff;border-radius:var(--radius);padding:28px 24px;width:100%;max-width:360px;display:flex;flex-direction:column;gap:14px;}
+  .panel-title{font-weight:700;font-size:15px;border-left:3px solid var(--shu);padding-left:10px;}
 </style>
 </head>
 <body>
 
-<!-- ========== ログイン画面 ========== -->
-<div id="loginWrap">
-  <div class="loginCard">
-    <h1>経費立替管理</h1>
-    <p>匡電気管理事務所</p>
-    <div id="loginError" class="alert alert-error hidden"></div>
-    <div class="formRow">
-      <label>アカウント名</label>
-      <input type="text" id="loginUser" placeholder="アカウント名" autocomplete="username">
+<script>
+// ★ GAS デプロイURL
+const GAS_URL = "https://script.google.com/macros/s/AKfycbygwdjOQItjZQ6bvtB7NG5zIbFJtc3-YzL08OGmeKldF-SDLVlqpDH5nHTAbihWyaAw/exec";
+</script>
+
+<!-- ログイン画面 -->
+<div id="page-login" class="login-wrap">
+  <div class="login-card">
+    <div class="login-logo">
+      <img src="logo.png" alt="匡電気管理事務所" class="login-logo-img">
+      <div class="login-title">有給休暇管理</div>
     </div>
-    <div class="formRow">
-      <label>パスワード</label>
-      <input type="password" id="loginPass" placeholder="パスワード" autocomplete="current-password">
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div>
+        <label class="lbl">アカウント名</label>
+        <input type="text" id="login-account" autocomplete="username" placeholder="アカウント名">
+      </div>
+      <div>
+        <label class="lbl">パスワード</label>
+        <input type="password" id="login-password" autocomplete="current-password" placeholder="パスワード">
+      </div>
+      <button class="btn btn-shu" id="login-btn" style="width:100%;margin-top:4px;">ログイン</button>
+      <div id="login-msg"></div>
+      <div style="display:flex;justify-content:space-between;margin-top:8px;">
+        <button class="link-btn" onclick="showPanel('change')">パスワード変更</button>
+        <button class="link-btn" onclick="showPanel('reset')">パスワード再発行</button>
+      </div>
     </div>
-    <button class="btn btn-primary btn-block mt16" id="btnLogin" onclick="doLogin()">ログイン</button>
   </div>
 </div>
 
-<!-- ========== アプリ本体 ========== -->
-<div id="appWrap" class="hidden">
+<!-- メイン画面 -->
+<div id="page-main" class="hidden">
   <header>
-    <div class="logo">経費立替管理 <span>| 匡電気管理事務所</span></div>
-    <div id="userInfo">
-      <span id="headerUsername"></span>
-      <button id="btnLogout" onclick="logout()">ログアウト</button>
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-img"><img src="logo.png" alt="匡電気管理事務所"></span>
+        <h1>有給休暇管理</h1>
+        <span class="user-name" id="header-username"></span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div class="tab-group" id="tab-group"></div>
+        <button class="btn btn-ghost" style="font-size:12px;padding:5px 10px;" id="logout-btn">ログアウト</button>
+      </div>
     </div>
   </header>
-
-  <div class="tabs" id="tabBar">
-    <button class="tab active" onclick="switchTab('my')"    id="tab-my">自分の申請</button>
-    <button class="tab"        onclick="switchTab('apply')" id="tab-apply">新規申請</button>
-    <button class="tab hidden" onclick="switchTab('admin')" id="tab-admin">管理者画面</button>
-  </div>
-
   <main>
-    <!-- ── 自分の申請 ── -->
-    <div id="page-my">
-      <div class="summaryBar" id="mySummaryBar"></div>
-      <div class="card">
-        <h2>申請履歴</h2>
-        <div id="myAlert" class="hidden"></div>
-        <div class="tableWrap">
-          <table id="myTable">
-            <thead>
-              <tr>
-                <th>発生日</th>
-                <th>項目</th>
-                <th>備考</th>
-                <th>金額</th>
-                <th>ステータス</th>
-                <th>精算</th>
-              </tr>
-            </thead>
-            <tbody id="myBody"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── 新規申請 ── -->
-    <div id="page-apply" class="hidden">
-      <div class="card" style="max-width:480px; margin:0 auto;">
-        <h2>新規申請</h2>
-        <div id="applyAlert" class="hidden"></div>
-        <div class="formRow">
-          <label>発生日 <span style="color:var(--danger)">*</span></label>
-          <input type="date" id="expDate">
-        </div>
-        <div class="formRow">
-          <label>項目 <span style="color:var(--danger)">*</span></label>
-          <select id="expCategory">
-            <option value="">選択してください</option>
-            <option>交通費</option>
-            <option>宿泊費</option>
-            <option>通信費</option>
-            <option>消耗品・工具</option>
-            <option>外注費</option>
-            <option>接待・会議費</option>
-            <option>その他</option>
-          </select>
-        </div>
-        <div class="formRow">
-          <label>金額 (円) <span style="color:var(--danger)">*</span></label>
-          <input type="number" id="expAmount" placeholder="0" min="1">
-        </div>
-        <div class="formRow">
-          <label>備考</label>
-          <textarea id="expNote" placeholder="購入先・用途など"></textarea>
-        </div>
-        <button class="btn btn-primary btn-block mt16" onclick="submitExpense()">申請する</button>
-      </div>
-    </div>
-
-    <!-- ── 管理者画面 ── -->
-    <div id="page-admin" class="hidden">
-      <div class="summaryBar" id="adminSummaryBar"></div>
-      <div class="card">
-        <div class="flex" style="justify-content:space-between; margin-bottom:16px;">
-          <h2 style="margin:0">全申請一覧</h2>
-          <div class="flex">
-            <select id="adminFilter" onchange="renderAdminTable()" style="width:auto; font-size:12px; padding:6px 10px;">
-              <option value="">すべて</option>
-              <option value="申請中">申請中のみ</option>
-              <option value="承認済み">承認済みのみ</option>
-              <option value="却下">却下のみ</option>
-            </select>
-            <button class="btn btn-outline" style="font-size:12px; padding:6px 12px;" onclick="downloadCSV()">CSV出力</button>
+    <!-- マイページ -->
+    <div id="view-employee" class="hidden">
+      <div class="card" id="stat-card">
+        <div class="stat-grid">
+          <div>
+            <label class="lbl">有給残日数</label>
+            <div><span class="big-num" id="stat-remaining">--</span><span style="color:var(--sub);font-size:13px;"> 日</span></div>
+          </div>
+          <div class="stat-items">
+            <div>付与 <strong id="stat-granted">--</strong> 日</div>
+            <div>使用 <strong id="stat-used">--</strong> 日</div>
+            <div>申請中 <strong class="amber" id="stat-pending">--</strong> 日</div>
           </div>
         </div>
-        <div id="adminAlert" class="hidden"></div>
-        <div class="tableWrap">
-          <table>
-            <thead>
-              <tr>
-                <th>申請日</th>
-                <th>申請者</th>
-                <th>発生日</th>
-                <th>項目</th>
-                <th>備考</th>
-                <th>金額</th>
-                <th>ステータス</th>
-                <th>精算</th>
-                <th>操作</th>
-              </tr>
-            </thead>
-            <tbody id="adminBody"></tbody>
-          </table>
-        </div>
       </div>
+      <div class="card" id="req-form-card">
+        <div class="card-title shu">有給休暇を申請する</div>
+        <div class="form-row">
+          <div><label class="lbl">開始日</label><input type="date" id="req-start"></div>
+          <div><label class="lbl">終了日(1日なら同じ日付)</label><input type="date" id="req-end"></div>
+        </div>
+        <div class="mt3"><label class="lbl">事由(任意)</label><input type="text" id="req-reason" placeholder="私用のため など"></div>
+        <div class="flex-between mt4">
+          <span class="text-sub">申請日数: <strong id="req-days-preview">0</strong> 日 <span style="font-size:11px;">※土日を除く</span></span>
+          <button class="btn btn-shu" id="req-submit-btn">申請する</button>
+        </div>
+        <div id="req-msg"></div>
+      </div>
+      <div class="card">
+        <div class="card-title ink">申請履歴</div>
+        <div class="req-list" id="my-req-list"><p class="text-sub">まだ申請はありません。</p></div>
+      </div>
+    </div>
+    <!-- 管理者 -->
+    <div id="view-admin" class="hidden">
+      <div class="card">
+        <div class="card-title shu">承認待ちの申請（<span id="admin-pending-count">0</span>件）</div>
+        <div id="admin-pending-list"><p class="text-sub">承認待ちの申請はありません。</p></div>
+      </div>
+      <div class="card">
+        <div class="card-title ink">従業員と有給残日数</div>
+        <div style="overflow-x:auto;">
+          <table class="tbl"><thead><tr><th style="text-align:left;">氏名</th><th>付与</th><th>使用</th><th>申請中</th><th>残</th></tr></thead>
+          <tbody id="emp-tbody"></tbody></table>
+        </div>
+        <p class="text-sub mt3">※従業員の追加・削除・付与日数の変更は「共通_社員マスタ」シートで行ってください。</p>
+      </div>
+    </div>
+    <div id="main-loading" class="card" style="text-align:center;color:var(--sub);padding:30px;">
+      <span class="loader loader-dark"></span>読み込み中…
     </div>
   </main>
 </div>
 
 <script>
-// ============================================================
-// 設定（デプロイ後に GAS の Web App URL を貼ってください）
-// ============================================================
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbyIahK65F28eUThDjopBB_HP-ufD9rbFwzN7Axie9HdXZO3IUj_OayyfvN05Ri5_-YyZA/exec';
+// ======================================================
+//  状態
+// ======================================================
+let state = { account:null, isAdmin:false, employees:[], requests:[], myEmployee:null, currentView:"employee" };
 
-// ─── State ───
-let currentUser = null;
-let isAdmin = false;
-let allExpenses = [];
-let myExpenses  = [];
-
-// ============================================================
-// ログイン
-// ============================================================
-async function doLogin() {
-  const user = document.getElementById('loginUser').value.trim();
-  const pass = document.getElementById('loginPass').value.trim();
-  const btn  = document.getElementById('btnLogin');
-  const err  = document.getElementById('loginError');
-
-  if (!user || !pass) { showEl(err, 'アカウント名とパスワードを入力してください', 'error'); return; }
-
-  btn.disabled = true;
-  btn.textContent = 'ログイン中...';
-  err.classList.add('hidden');
-
-  try {
-    const res = await gasGet({ action: 'login', username: user, password: pass });
-    if (res.success) {
-      currentUser = res.username;
-      isAdmin     = res.isAdmin;
-      document.getElementById('loginWrap').classList.add('hidden');
-      document.getElementById('appWrap').classList.remove('hidden');
-      document.getElementById('headerUsername').textContent = currentUser + (isAdmin ? '（管理者）' : '');
-      if (isAdmin) document.getElementById('tab-admin').classList.remove('hidden');
-      switchTab('my');
-      loadMyExpenses();
-    } else {
-      showEl(err, res.error || 'ログインに失敗しました', 'error');
-    }
-  } catch(e) {
-    showEl(err, '通信エラーが発生しました', 'error');
-  }
-
-  btn.disabled = false;
-  btn.textContent = 'ログイン';
+// ======================================================
+//  ユーティリティ
+// ======================================================
+function todayStr(){const t=new Date(),p=n=>String(n).padStart(2,"0");return `${t.getFullYear()}-${p(t.getMonth()+1)}-${p(t.getDate())}`;}
+function fmtDate(s){if(!s)return "";const[y,m,d]=s.split("-");return `${y}/${Number(m)}/${Number(d)}`;}
+function countBusinessDays(s,e){
+  const start=new Date(s+"T00:00:00"),end=new Date(e+"T00:00:00");
+  if(isNaN(start)||isNaN(end)||start>end)return 0;
+  let c=0,d=new Date(start);
+  while(d<=end){const w=d.getDay();if(w!==0&&w!==6)c++;d.setDate(d.getDate()+1);}
+  return c;
 }
-
-document.getElementById('loginPass').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
-document.getElementById('loginUser').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
-
-function logout() {
-  currentUser = null; isAdmin = false;
-  allExpenses = []; myExpenses = [];
-  document.getElementById('appWrap').classList.add('hidden');
-  document.getElementById('loginWrap').classList.remove('hidden');
-  document.getElementById('loginPass').value = '';
+function summarize(emp,requests){
+  const mine=requests.filter(r=>r.employeeId===emp.id);
+  const used=mine.filter(r=>r.status==="approved").reduce((s,r)=>s+r.days,0);
+  const pending=mine.filter(r=>r.status==="pending").reduce((s,r)=>s+r.days,0);
+  return{used,pending,remaining:emp.granted-used};
 }
+function statusLabel(s){return{pending:"申請中",approved:"承認済",rejected:"却下",cancelled:"取下げ"}[s]||s;}
+function statusClass(s){return{pending:"s-pending",approved:"s-approved",rejected:"s-rejected",cancelled:"s-cancelled"}[s]||"";}
+function el(id){return document.getElementById(id);}
+function setMsg(id,text,type="ok"){el(id).innerHTML=text?`<div class="alert alert-${type}">${text}</div>`:"";}
 
-// ============================================================
-// タブ切り替え
-// ============================================================
-function switchTab(name) {
-  ['my','apply','admin'].forEach(t => {
-    document.getElementById('page-' + t).classList.add('hidden');
-    document.getElementById('tab-'  + t)?.classList.remove('active');
-  });
-  document.getElementById('page-' + name).classList.remove('hidden');
-  document.getElementById('tab-'  + name)?.classList.add('active');
-
-  if (name === 'admin' && isAdmin) loadAllExpenses();
-}
-
-// ============================================================
-// 自分の申請一覧
-// ============================================================
-async function loadMyExpenses() {
-  try {
-    const res = await gasGet({ action: 'getMyExpenses', username: currentUser });
-    if (res.success) {
-      myExpenses = res.data || [];
-      renderMyTable();
-    }
-  } catch(e) { console.error(e); }
-}
-
-function renderMyTable() {
-  const tbody = document.getElementById('myBody');
-  const total    = myExpenses.reduce((s, r) => s + Number(r['金額'] || 0), 0);
-  const pending  = myExpenses.filter(r => r['精算状況'] === '未精算').reduce((s, r) => s + Number(r['金額'] || 0), 0);
-  const settled  = myExpenses.filter(r => r['精算状況'] === '精算済み').reduce((s, r) => s + Number(r['金額'] || 0), 0);
-
-  document.getElementById('mySummaryBar').innerHTML = `
-    <div class="summaryItem"><div class="label">合計申請額</div><div class="value blue">¥${fmt(total)}</div></div>
-    <div class="summaryItem"><div class="label">未精算</div><div class="value orange">¥${fmt(pending)}</div></div>
-    <div class="summaryItem"><div class="label">精算済み</div><div class="value green">¥${fmt(settled)}</div></div>
-    <div class="summaryItem"><div class="label">申請件数</div><div class="value">${myExpenses.length}件</div></div>
-  `;
-
-  if (myExpenses.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="6"><div class="empty">申請はありません</div></td></tr>`;
-    return;
-  }
-
-  tbody.innerHTML = [...myExpenses].reverse().map(r => `
-    <tr>
-      <td>${r['発生日']}</td>
-      <td>${r['項目']}</td>
-      <td class="muted" style="max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${r['備考']}</td>
-      <td class="amount">¥${fmt(r['金額'])}</td>
-      <td><span class="badge badge-${r['ステータス']}">${r['ステータス']}</span></td>
-      <td><span class="badge badge-${r['精算状況']}">${r['精算状況']}</span></td>
-    </tr>
-  `).join('');
-}
-
-// ============================================================
-// 新規申請
-// ============================================================
-async function submitExpense() {
-  const date     = document.getElementById('expDate').value;
-  const category = document.getElementById('expCategory').value;
-  const amount   = document.getElementById('expAmount').value;
-  const note     = document.getElementById('expNote').value;
-  const alertEl  = document.getElementById('applyAlert');
-
-  if (!date || !category || !amount) {
-    showEl(alertEl, '発生日・項目・金額は必須です', 'error'); return;
-  }
-  if (Number(amount) <= 0) {
-    showEl(alertEl, '金額は1円以上で入力してください', 'error'); return;
-  }
-
-  alertEl.classList.add('hidden');
-
-  try {
-    const res = await gasGet({ action: 'addExpense', username: currentUser, date, amount, category, note });
-    if (res.success) {
-      showEl(alertEl, '申請しました（ID: ' + res.id + '）', 'success');
-      document.getElementById('expDate').value = '';
-      document.getElementById('expCategory').value = '';
-      document.getElementById('expAmount').value = '';
-      document.getElementById('expNote').value = '';
-      loadMyExpenses();
-    } else {
-      showEl(alertEl, res.error || '申請に失敗しました', 'error');
-    }
-  } catch(e) {
-    showEl(alertEl, '通信エラーが発生しました', 'error');
-  }
-}
-
-// ============================================================
-// 管理者：全申請
-// ============================================================
-async function loadAllExpenses() {
-  try {
-    const res = await gasGet({ action: 'getExpenses', username: currentUser, isAdmin: isAdmin ? 'true' : 'false' });
-    if (res.success) {
-      allExpenses = res.data || [];
-      renderAdminTable();
-    }
-  } catch(e) { console.error(e); }
-}
-
-function renderAdminTable() {
-  const filter = document.getElementById('adminFilter').value;
-  const list   = filter ? allExpenses.filter(r => r['ステータス'] === filter) : allExpenses;
-
-  const total   = allExpenses.reduce((s, r) => s + Number(r['金額'] || 0), 0);
-  const pending = allExpenses.filter(r => r['ステータス'] === '申請中').reduce((s, r) => s + Number(r['金額'] || 0), 0);
-  const unsettled = allExpenses.filter(r => r['精算状況'] === '未精算' && r['ステータス'] === '承認済み').reduce((s, r) => s + Number(r['金額'] || 0), 0);
-
-  document.getElementById('adminSummaryBar').innerHTML = `
-    <div class="summaryItem"><div class="label">総申請額</div><div class="value blue">¥${fmt(total)}</div></div>
-    <div class="summaryItem"><div class="label">承認待ち</div><div class="value orange">¥${fmt(pending)}</div></div>
-    <div class="summaryItem"><div class="label">精算待ち（承認済）</div><div class="value orange">¥${fmt(unsettled)}</div></div>
-    <div class="summaryItem"><div class="label">申請件数</div><div class="value">${allExpenses.length}件</div></div>
-  `;
-
-  const tbody = document.getElementById('adminBody');
-  if (list.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="9"><div class="empty">データがありません</div></td></tr>`;
-    return;
-  }
-
-  tbody.innerHTML = [...list].reverse().map(r => {
-    const actions = [];
-    if (r['ステータス'] === '申請中') {
-      actions.push(`<button class="btn btn-success" style="font-size:11px;padding:4px 10px;" onclick="updateStatus('${r['ID']}','approve')">承認</button>`);
-      actions.push(`<button class="btn btn-danger"  style="font-size:11px;padding:4px 10px;" onclick="updateStatus('${r['ID']}','reject')">却下</button>`);
-    }
-    if (r['ステータス'] === '承認済み' && r['精算状況'] === '未精算') {
-      actions.push(`<button class="btn btn-warn" style="font-size:11px;padding:4px 10px;" onclick="updateStatus('${r['ID']}','settle')">精算済み</button>`);
-    }
-    return `
-      <tr>
-        <td class="muted">${r['申請日']}</td>
-        <td><strong>${r['申請者']}</strong></td>
-        <td>${r['発生日']}</td>
-        <td>${r['項目']}</td>
-        <td class="muted" style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r['備考']}</td>
-        <td class="amount">¥${fmt(r['金額'])}</td>
-        <td><span class="badge badge-${r['ステータス']}">${r['ステータス']}</span></td>
-        <td><span class="badge badge-${r['精算状況']}">${r['精算状況']}</span></td>
-        <td><div class="flex" style="gap:4px;">${actions.join('')}</div></td>
-      </tr>
-    `;
-  }).join('');
-}
-
-async function updateStatus(id, action) {
-  const alertEl = document.getElementById('adminAlert');
-  try {
-    const res = await gasGet({ action: 'updateStatus', username: currentUser, isAdmin: 'true', id, action });
-    if (res.success) {
-      showEl(alertEl, '更新しました', 'success');
-      loadAllExpenses();
-      setTimeout(() => alertEl.classList.add('hidden'), 3000);
-    } else {
-      showEl(alertEl, res.error || '更新に失敗しました', 'error');
-    }
-  } catch(e) {
-    showEl(alertEl, '通信エラーが発生しました', 'error');
-  }
-}
-
-// ============================================================
-// CSV 出力
-// ============================================================
-function downloadCSV() {
-  if (allExpenses.length === 0) return;
-  const headers = ['ID','申請者','申請日','発生日','金額','項目','備考','ステータス','承認者','承認日','精算状況','精算日'];
-  const rows = allExpenses.map(r => headers.map(h => `"${(r[h] || '').replace(/"/g, '""')}"`).join(','));
-  const csv  = '\uFEFF' + headers.join(',') + '\n' + rows.join('\n');
-  const blob = new Blob([csv], { type: 'text/csv' });
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  a.href = url; a.download = '経費立替_' + today() + '.csv'; a.click();
-  URL.revokeObjectURL(url);
-}
-
-// ============================================================
-// ユーティリティ
-// ============================================================
-async function gasGet(params) {
-  const qs = new URLSearchParams(params).toString();
-  const res = await fetch(GAS_URL + '?' + qs);
+// ======================================================
+//  GAS API — 全てGETパラメータで送信
+// ======================================================
+async function gasCall(params){
+  const url=GAS_URL+"?"+new URLSearchParams(params);
+  const res=await fetch(url);
   return res.json();
 }
 
-function showEl(el, msg, type) {
-  el.textContent = msg;
-  el.className   = 'alert alert-' + type;
+// ======================================================
+//  初期化
+// ======================================================
+window.addEventListener("DOMContentLoaded",()=>{
+  // セッション復元
+  const saved=sessionStorage.getItem("yukyu-session");
+  if(saved){const s=JSON.parse(saved);state.account=s.account;state.isAdmin=s.isAdmin;showMain();}
+
+  // 日付初期値
+  const today=todayStr();
+  el("req-start").value=today; el("req-end").value=today;
+
+  // イベント
+  el("login-btn").addEventListener("click",doLogin);
+  el("logout-btn").addEventListener("click",doLogout);
+  el("req-submit-btn").addEventListener("click",submitRequest);
+  el("req-start").addEventListener("change",updateDaysPreview);
+  el("req-end").addEventListener("change",updateDaysPreview);
+  ["login-account","login-password"].forEach(id=>{
+    el(id).addEventListener("keydown",e=>{if(e.key==="Enter")doLogin();});
+  });
+});
+
+// ======================================================
+//  ログイン / ログアウト
+// ======================================================
+async function doLogin(){
+  const account=el("login-account").value.trim();
+  const password=el("login-password").value.trim();
+  if(!account||!password){setMsg("login-msg","アカウント名とパスワードを入力してください。","err");return;}
+  const btn=el("login-btn");
+  btn.disabled=true; btn.innerHTML='<span class="loader"></span>認証中…';
+  setMsg("login-msg","");
+  try{
+    const data=await gasCall({action:"login",account,password});
+    if(data.ok){
+      state.account=data.account; state.isAdmin=data.isAdmin;
+      sessionStorage.setItem("yukyu-session",JSON.stringify({account:data.account,isAdmin:data.isAdmin}));
+      showMain();
+    }else{setMsg("login-msg",data.error||"ログインに失敗しました。","err");}
+  }catch(e){setMsg("login-msg","通信エラーが発生しました。GAS URLを確認してください。","err");}
+  finally{btn.disabled=false;btn.textContent="ログイン";}
 }
 
-function fmt(n)    { return Number(n).toLocaleString('ja-JP'); }
-function today()   { return new Date().toISOString().slice(0, 10).replace(/-/g,''); }
+function doLogout(){
+  sessionStorage.removeItem("yukyu-session");
+  state={account:null,isAdmin:false,employees:[],requests:[],myEmployee:null,currentView:"employee"};
+  el("page-login").classList.remove("hidden");
+  el("page-main").classList.add("hidden");
+  el("login-account").value=""; el("login-password").value="";
+  setMsg("login-msg","");
+}
+
+// ======================================================
+//  メイン画面
+// ======================================================
+function showMain(){
+  el("page-login").classList.add("hidden");
+  el("page-main").classList.remove("hidden");
+  el("header-username").textContent=state.account+" さん";
+  buildTabs();
+  loadData();
+}
+
+function buildTabs(){
+  const tg=el("tab-group"); tg.innerHTML="";
+  const tabs=[["employee","マイページ"]];
+  if(state.isAdmin)tabs.push(["admin","管理者"]);
+  tabs.forEach(([id,label])=>{
+    const btn=document.createElement("button");
+    btn.className="tab-btn"+(state.currentView===id?" active":"");
+    btn.dataset.view=id; btn.textContent=label;
+    if(id==="admin")btn.id="admin-tab-btn";
+    btn.addEventListener("click",()=>switchView(id));
+    tg.appendChild(btn);
+  });
+}
+
+function switchView(view){
+  state.currentView=view;
+  document.querySelectorAll(".tab-btn").forEach(b=>b.classList.toggle("active",b.dataset.view===view));
+  el("view-employee").classList.toggle("hidden",view!=="employee");
+  el("view-admin").classList.toggle("hidden",view!=="admin");
+}
+
+// ======================================================
+//  データ読み込み
+// ======================================================
+async function loadData(){
+  el("main-loading").classList.remove("hidden");
+  el("view-employee").classList.add("hidden");
+  el("view-admin").classList.add("hidden");
+  try{
+    const[empRes,reqRes]=await Promise.all([
+      gasCall({action:"getEmployees"}),
+      gasCall({action:"getRequests"}),
+    ]);
+    state.employees=empRes.employees||[];
+    state.requests=reqRes.requests||[];
+    state.myEmployee=state.employees.find(e=>e.name===state.account)||null;
+    render();
+  }catch(e){alert("データの読み込みに失敗しました。通信環境を確認してください。");}
+  finally{el("main-loading").classList.add("hidden");}
+}
+
+// ======================================================
+//  描画
+// ======================================================
+function render(){
+  renderEmployee();
+  if(state.isAdmin)renderAdmin();
+  switchView(state.currentView);
+  updateAdminBadge();
+}
+
+function renderEmployee(){
+  const emp=state.myEmployee;
+  if(!emp){
+    el("stat-card").innerHTML=`<p style="color:var(--sub);font-size:14px;">
+      アカウント名「<strong>${state.account}</strong>」と一致する従業員が名簿にありません。<br>
+      管理者に従業員名の登録を依頼してください（名前はアカウント名と完全一致が必要です）。</p>`;
+    el("req-form-card").classList.add("hidden");
+    return;
+  }
+  el("req-form-card").classList.remove("hidden");
+  const s=summarize(emp,state.requests);
+  el("stat-remaining").textContent=s.remaining;
+  el("stat-remaining").className="big-num"+(s.remaining<=3?" warn":"");
+  el("stat-granted").textContent=emp.granted;
+  el("stat-used").textContent=s.used;
+  el("stat-pending").textContent=s.pending;
+
+  const myReqs=state.requests.filter(r=>r.employeeId===emp.id);
+  const list=el("my-req-list");
+  if(myReqs.length===0){list.innerHTML='<p class="text-sub">まだ申請はありません。</p>';return;}
+  list.innerHTML=myReqs.map(r=>`
+    <div class="req-item">
+      <div class="req-meta">
+        <div class="req-date">
+          ${fmtDate(r.startDate)}${r.startDate!==r.endDate?" 〜 "+fmtDate(r.endDate):""}
+          <span style="font-weight:400;font-size:13px;color:var(--sub);margin-left:6px;">${r.days}日</span>
+          <span class="status-badge ${statusClass(r.status)}" style="margin-left:4px;">${statusLabel(r.status)}</span>
+        </div>
+        ${r.reason?`<div class="req-sub">${r.reason}</div>`:""}
+        ${r.status==="pending"?`<button class="req-cancel" onclick="cancelRequest('${r.id}')">申請を取り下げる</button>`:""}
+      </div>
+      ${r.status==="approved"?`<div class="stamp"><div class="stamp-label">承認</div><div class="stamp-date">${fmtDate(r.decidedAt)}</div></div>`:""}
+    </div>`).join("");
+}
+
+function updateDaysPreview(){
+  el("req-days-preview").textContent=countBusinessDays(el("req-start").value,el("req-end").value);
+}
+
+function renderAdmin(){
+  const pending=state.requests.filter(r=>r.status==="pending");
+  el("admin-pending-count").textContent=pending.length;
+  const plist=el("admin-pending-list");
+  if(pending.length===0){plist.innerHTML='<p class="text-sub">承認待ちの申請はありません。</p>';}
+  else{
+    plist.innerHTML=pending.map(r=>{
+      const emp=state.employees.find(e=>e.id===r.employeeId);
+      return `<div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);flex-wrap:wrap;">
+        <div style="flex:1;min-width:180px;">
+          <div style="font-weight:700;">${emp?emp.name:"(削除済)"}</div>
+          <div class="text-sub" style="margin-top:2px;">${fmtDate(r.startDate)}${r.startDate!==r.endDate?" 〜 "+fmtDate(r.endDate):""}・${r.days}日${r.reason?"・"+r.reason:""}</div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-shu" style="font-size:13px;padding:6px 16px;" onclick="decide('${r.id}','approved')">承認</button>
+          <button class="btn btn-ghost" style="font-size:13px;padding:6px 16px;" onclick="decide('${r.id}','rejected')">却下</button>
+        </div>
+      </div>`;
+    }).join("");
+  }
+
+  const tbody=el("emp-tbody");
+  tbody.innerHTML=state.employees.map(e=>{
+    const s=summarize(e,state.requests);
+    return `<tr>
+      <td>${e.name}${e.name===state.account?'<span style="font-size:11px;color:var(--sub);margin-left:4px;">(あなた)</span>':""}</td>
+      <td>${e.granted}</td>
+      <td>${s.used}</td>
+      <td class="${s.pending>0?"amber-cell":""}">${s.pending}</td>
+      <td class="${s.remaining<=3?"warn-cell":""}">${s.remaining}</td>
+    </tr>`;
+  }).join("");
+}
+
+function updateAdminBadge(){
+  const btn=el("admin-tab-btn");
+  if(!btn)return;
+  const count=state.requests.filter(r=>r.status==="pending").length;
+  const ex=btn.querySelector(".badge");
+  if(ex)ex.remove();
+  if(count>0)btn.insertAdjacentHTML("beforeend",`<span class="badge">${count}</span>`);
+}
+
+// ======================================================
+//  操作
+// ======================================================
+async function submitRequest(){
+  const emp=state.myEmployee; if(!emp)return;
+  const startDate=el("req-start").value, endDate=el("req-end").value;
+  const reason=el("req-reason").value.trim();
+  const days=countBusinessDays(startDate,endDate);
+  if(days<=0){setMsg("req-msg","日付を確認してください(終了日は開始日以降、土日のみの期間は申請できません)。","err");return;}
+  const s=summarize(emp,state.requests);
+  if(days>s.remaining-s.pending){setMsg("req-msg",`残日数が不足しています(申請可能:${s.remaining-s.pending}日)。`,"err");return;}
+  const btn=el("req-submit-btn");
+  btn.disabled=true; btn.innerHTML='<span class="loader"></span>送信中…';
+  setMsg("req-msg","");
+  try{
+    const res=await gasCall({action:"addRequest",employeeId:emp.id,startDate,endDate,days,reason,status:"pending",createdAt:todayStr()});
+    if(res.ok){el("req-reason").value="";setMsg("req-msg",`申請しました(${days}日)。承認をお待ちください。`,"ok");await loadData();}
+    else{setMsg("req-msg",res.error||"申請に失敗しました。","err");}
+  }catch{setMsg("req-msg","通信エラーが発生しました。","err");}
+  finally{btn.disabled=false;btn.textContent="申請する";}
+}
+
+async function cancelRequest(id){
+  if(!confirm("この申請を取り下げますか？"))return;
+  try{await gasCall({action:"updateRequest",id,status:"cancelled",decidedAt:""});await loadData();}
+  catch{alert("通信エラー");}
+}
+
+async function decide(id,status){
+  try{await gasCall({action:"updateRequest",id,status,decidedAt:todayStr()});await loadData();}
+  catch{alert("通信エラー");}
+}
+
+  try{
+    const res=await gasCall({action:"addEmployee",name,granted});
+    if(res.ok){el("new-emp-name").value="";el("new-emp-granted").value="10";await loadData();}
+    else{alert(res.error||"追加に失敗しました");}
+  }catch{alert("通信エラー");}
+}
+
+  }catch{alert("通信エラー");}
+}
+
+  catch{alert("通信エラー");}
+}
+</script>
+
+<!-- パスワード変更パネル -->
+<div id="panel-change" class="panel-overlay hidden">
+  <div class="panel-card">
+    <div class="panel-title">パスワード変更</div>
+    <div><label class="lbl">氏名(アカウント名)</label><input type="text" id="chg-account" placeholder="佐藤英匡"></div>
+    <div><label class="lbl">現在のパスワード</label><input type="password" id="chg-old" placeholder="現在のパスワード"></div>
+    <div><label class="lbl">新しいパスワード(6文字以上)</label><input type="password" id="chg-new" placeholder="新しいパスワード"></div>
+    <div><label class="lbl">新しいパスワード(確認)</label><input type="password" id="chg-new2" placeholder="もう一度入力"></div>
+    <div id="chg-msg"></div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn btn-ghost" style="flex:1;" onclick="showPanel(null)">キャンセル</button>
+      <button class="btn btn-shu" style="flex:1;" id="chg-btn" onclick="doChangePassword()">変更する</button>
+    </div>
+  </div>
+</div>
+
+<!-- パスワード再発行パネル -->
+<div id="panel-reset" class="panel-overlay hidden">
+  <div class="panel-card">
+    <div class="panel-title">パスワード再発行</div>
+    <p style="font-size:13px;color:var(--sub);margin-bottom:4px;">登録済みのメールアドレスに仮パスワードを送信します。</p>
+    <div><label class="lbl">氏名(アカウント名)</label><input type="text" id="rst-account" placeholder="佐藤英匡"></div>
+    <div id="rst-msg"></div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn btn-ghost" style="flex:1;" onclick="showPanel(null)">キャンセル</button>
+      <button class="btn btn-shu" style="flex:1;" id="rst-btn" onclick="doResetPassword()">送信する</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── パネル表示制御 ──
+function showPanel(name) {
+  ['change','reset'].forEach(n => {
+    const p = el('panel-'+n);
+    if(p) p.classList.toggle('hidden', n !== name);
+  });
+  // メッセージリセット
+  if(name==='change'){setMsg('chg-msg','');['chg-account','chg-old','chg-new','chg-new2'].forEach(id=>{const e=el(id);if(e)e.value='';});}
+  if(name==='reset'){setMsg('rst-msg','');const e=el('rst-account');if(e)e.value='';}
+}
+
+// ── パスワード変更 ──
+async function doChangePassword() {
+  const account     = el('chg-account').value.trim();
+  const oldPassword = el('chg-old').value.trim();
+  const newPassword = el('chg-new').value.trim();
+  const newPassword2= el('chg-new2').value.trim();
+  if(!account||!oldPassword||!newPassword||!newPassword2){setMsg('chg-msg','すべての項目を入力してください。','err');return;}
+  if(newPassword !== newPassword2){setMsg('chg-msg','新しいパスワードが一致しません。','err');return;}
+  if(newPassword.length < 6){setMsg('chg-msg','新しいパスワードは6文字以上にしてください。','err');return;}
+  const btn=el('chg-btn'); btn.disabled=true; btn.innerHTML='<span class="loader"></span>送信中…';
+  try{
+    const res = await gasCall({action:'changePassword', account, oldPassword, newPassword});
+    if(res.ok){
+      setMsg('chg-msg','パスワードを変更しました。新しいパスワードでログインしてください。','ok');
+      setTimeout(()=>showPanel(null), 2000);
+    } else {
+      setMsg('chg-msg', res.error||'変更に失敗しました。','err');
+    }
+  } catch{ setMsg('chg-msg','通信エラーが発生しました。','err'); }
+  finally{ btn.disabled=false; btn.textContent='変更する'; }
+}
+
+// ── パスワード再発行 ──
+async function doResetPassword() {
+  const account = el('rst-account').value.trim();
+  if(!account){setMsg('rst-msg','氏名を入力してください。','err');return;}
+  const btn=el('rst-btn'); btn.disabled=true; btn.innerHTML='<span class="loader"></span>送信中…';
+  try{
+    const res = await gasCall({action:'resetPassword', account});
+    if(res.ok){
+      setMsg('rst-msg',`仮パスワードを ${res.email} に送信しました。メールをご確認ください。`,'ok');
+      el('rst-btn').style.display='none';
+    } else {
+      setMsg('rst-msg', res.error||'送信に失敗しました。','err');
+    }
+  } catch{ setMsg('rst-msg','通信エラーが発生しました。','err'); }
+  finally{ btn.disabled=false; btn.textContent='送信する'; }
+}
 </script>
 </body>
 </html>
