@@ -505,55 +505,63 @@ async function decide(id,status){
   </div>
 </div>
 
+
 <script>
 // ── パネル表示制御 ──
 function showPanel(name) {
-  ['change','reset'].forEach(n => {
-    const p = el('panel-'+n);
+  ['change','reset'].forEach(function(n) {
+    var p = document.getElementById('panel-'+n);
     if(p) p.classList.toggle('hidden', n !== name);
   });
-  // メッセージリセット
-  if(name==='change'){setMsg('chg-msg','');['chg-account','chg-old','chg-new','chg-new2'].forEach(id=>{const e=el(id);if(e)e.value='';});}
-  if(name==='reset'){setMsg('rst-msg','');const e=el('rst-account');if(e)e.value='';}
+  if(name==='change'){
+    ['chg-msg','chg-account','chg-old','chg-new','chg-new2'].forEach(function(id){
+      var e=document.getElementById(id);
+      if(e){ if(id==='chg-msg') e.innerHTML=''; else e.value=''; }
+    });
+  }
+  if(name==='reset'){
+    var m=document.getElementById('rst-msg'); if(m) m.innerHTML='';
+    var a=document.getElementById('rst-account'); if(a) a.value='';
+    var b=document.getElementById('rst-btn'); if(b) b.style.display='';
+  }
 }
 
 // ── パスワード変更 ──
 async function doChangePassword() {
-  const account     = el('chg-account').value.trim();
-  const oldPassword = el('chg-old').value.trim();
-  const newPassword = el('chg-new').value.trim();
-  const newPassword2= el('chg-new2').value.trim();
-  if(!account||!oldPassword||!newPassword||!newPassword2){setMsg('chg-msg','すべての項目を入力してください。','err');return;}
-  if(newPassword !== newPassword2){setMsg('chg-msg','新しいパスワードが一致しません。','err');return;}
-  if(newPassword.length < 6){setMsg('chg-msg','新しいパスワードは6文字以上にしてください。','err');return;}
-  const btn=el('chg-btn'); btn.disabled=true; btn.innerHTML='<span class="loader"></span>送信中…';
+  var account=document.getElementById('chg-account').value.trim();
+  var oldPassword=document.getElementById('chg-old').value.trim();
+  var newPassword=document.getElementById('chg-new').value.trim();
+  var newPassword2=document.getElementById('chg-new2').value.trim();
+  var msgEl=document.getElementById('chg-msg');
+  function setChgMsg(txt,type){msgEl.innerHTML=txt?'<div class="alert alert-'+type+'">'+txt+'</div>':'';}
+  if(!account||!oldPassword||!newPassword||!newPassword2){setChgMsg('すべての項目を入力してください。','err');return;}
+  if(newPassword!==newPassword2){setChgMsg('新しいパスワードが一致しません。','err');return;}
+  if(newPassword.length<6){setChgMsg('新しいパスワードは6文字以上にしてください。','err');return;}
+  var btn=document.getElementById('chg-btn');
+  btn.disabled=true;btn.innerHTML='<span class="loader"></span>送信中…';
   try{
-    const res = await gasCall({action:'changePassword', account, oldPassword, newPassword});
-    if(res.ok){
-      setMsg('chg-msg','パスワードを変更しました。新しいパスワードでログインしてください。','ok');
-      setTimeout(()=>showPanel(null), 2000);
-    } else {
-      setMsg('chg-msg', res.error||'変更に失敗しました。','err');
-    }
-  } catch{ setMsg('chg-msg','通信エラーが発生しました。','err'); }
-  finally{ btn.disabled=false; btn.textContent='変更する'; }
+    var url=GAS_URL+'?'+new URLSearchParams({action:'changePassword',account:account,oldPassword:oldPassword,newPassword:newPassword});
+    var res=await (await fetch(url)).json();
+    if(res.ok){setChgMsg('パスワードを変更しました。新しいパスワードでログインしてください。','ok');setTimeout(function(){showPanel(null);},2500);}
+    else{setChgMsg(res.error||'変更に失敗しました。','err');}
+  }catch(e){setChgMsg('通信エラーが発生しました。','err');}
+  finally{btn.disabled=false;btn.textContent='変更する';}
 }
 
 // ── パスワード再発行 ──
 async function doResetPassword() {
-  const account = el('rst-account').value.trim();
-  if(!account){setMsg('rst-msg','氏名を入力してください。','err');return;}
-  const btn=el('rst-btn'); btn.disabled=true; btn.innerHTML='<span class="loader"></span>送信中…';
+  var account=document.getElementById('rst-account').value.trim();
+  var msgEl=document.getElementById('rst-msg');
+  function setRstMsg(txt,type){msgEl.innerHTML=txt?'<div class="alert alert-'+type+'">'+txt+'</div>':'';}
+  if(!account){setRstMsg('氏名を入力してください。','err');return;}
+  var btn=document.getElementById('rst-btn');
+  btn.disabled=true;btn.innerHTML='<span class="loader"></span>送信中…';
   try{
-    const res = await gasCall({action:'resetPassword', account});
-    if(res.ok){
-      setMsg('rst-msg',`仮パスワードを ${res.email} に送信しました。メールをご確認ください。`,'ok');
-      el('rst-btn').style.display='none';
-    } else {
-      setMsg('rst-msg', res.error||'送信に失敗しました。','err');
-    }
-  } catch{ setMsg('rst-msg','通信エラーが発生しました。','err'); }
-  finally{ btn.disabled=false; btn.textContent='送信する'; }
+    var url=GAS_URL+'?'+new URLSearchParams({action:'resetPassword',account:account});
+    var res=await (await fetch(url)).json();
+    if(res.ok){setRstMsg('仮パスワードを '+res.email+' に送信しました。','ok');btn.style.display='none';}
+    else{setRstMsg(res.error||'送信に失敗しました。','err');btn.disabled=false;btn.textContent='送信する';}
+  }catch(e){setRstMsg('通信エラーが発生しました。','err');btn.disabled=false;btn.textContent='送信する';}
 }
 </script>
 </body>
